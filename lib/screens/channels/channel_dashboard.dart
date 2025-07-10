@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/channel.dart';
 import '../../providers/channel_provider.dart';
 import 'widgets/channel_card.dart';
-import 'widgets/live_indicator.dart';
 
 class ChannelDashboard extends ConsumerStatefulWidget {
   const ChannelDashboard({super.key});
@@ -86,7 +85,7 @@ class _ChannelDashboardState extends ConsumerState<ChannelDashboard>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.live_tv_off, size: 64, color: Colors.grey),
+                Icon(Icons.tv_off, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
                 Text('No live channels at the moment'),
                 Text('Check back later for live streams!'),
