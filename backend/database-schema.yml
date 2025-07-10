@@ -1,0 +1,43 @@
+# MISSING: Complete database schema
+database_schema:
+  users:
+    id: UUID PRIMARY KEY
+    email: VARCHAR(255) UNIQUE NOT NULL
+    password_hash: VARCHAR(255) NOT NULL
+    fica_verified: BOOLEAN DEFAULT FALSE
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+    
+  channels:
+    id: UUID PRIMARY KEY
+    creator_id: UUID REFERENCES users(id)
+    name: VARCHAR(255) NOT NULL
+    description: TEXT
+    subscription_tier: ENUM('free', 'basic', 'premium', 'elite')
+    price: DECIMAL(10,2)
+    is_live: BOOLEAN DEFAULT FALSE
+    viewer_count: INTEGER DEFAULT 0
+    created_at: TIMESTAMP
+    
+  subscriptions:
+    id: UUID PRIMARY KEY
+    user_id: UUID REFERENCES users(id)
+    channel_id: UUID REFERENCES channels(id)
+    tier: ENUM('basic', 'premium', 'elite')
+    status: ENUM('active', 'cancelled', 'expired')
+    payfast_subscription_id: VARCHAR(255)
+    expires_at: TIMESTAMP
+    created_at: TIMESTAMP
+    
+  bet_receipts:
+    id: UUID PRIMARY KEY
+    user_id: UUID REFERENCES users(id)
+    bookmaker: VARCHAR(100)
+    bet_type: VARCHAR(100)
+    stake_amount: DECIMAL(10,2)
+    odds: DECIMAL(8,2)
+    is_win: BOOLEAN
+    win_amount: DECIMAL(10,2)
+    receipt_image_url: VARCHAR(500)
+    ocr_data: JSONB
+    created_at: TIMESTAMP
