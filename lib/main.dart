@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Hive for local storage
-  await Hive.initFlutter();
+  // Set preferred orientations
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   
-  runApp(
-    const ProviderScope(
-      child: BetwizzApp(),
-    ),
-  );
+  runApp(const BetwizzApp());
 }
 
 class BetwizzApp extends StatelessWidget {
@@ -23,73 +21,28 @@ class BetwizzApp extends StatelessWidget {
     return MaterialApp(
       title: 'Betwizz - Sports Betting Intelligence',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
-      // Add proper routing for web deployment
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(builder: (_) => const SplashScreen());
-          case '/home':
-            return MaterialPageRoute(builder: (_) => const MainNavigation());
-          case '/channels':
-            return MaterialPageRoute(builder: (_) => const ChannelDashboard());
-          case '/scanner':
-            return MaterialPageRoute(builder: (_) => const ReceiptScannerScreen());
-          case '/chat':
-            return MaterialPageRoute(builder: (_) => const AIChatScreen());
-          case '/profile':
-            return MaterialPageRoute(builder: (_) => const ProfileScreen());
-          default:
-            return MaterialPageRoute(builder: (_) => const MainNavigation());
-        }
-      },
-    );
-  }
-}
-
-class AppTheme {
-  static const Color primaryGreen = Color(0xFF2E7D32);
-  static const Color accentGold = Color(0xFFFFD700);
-  static const Color darkGreen = Color(0xFF1B5E20);
-  static const Color lightGreen = Color(0xFF4CAF50);
-  static const Color backgroundColor = Color(0xFFF5F5F5);
-  static const Color cardColor = Colors.white;
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
-
-  static ThemeData get lightTheme {
-    return ThemeData(
-      primarySwatch: Colors.green,
-      primaryColor: primaryGreen,
-      scaffoldBackgroundColor: backgroundColor,
-      cardColor: cardColor,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: primaryGreen,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarTheme(
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryGreen,
-        unselectedItemColor: textSecondary,
-        type: BottomNavigationBarType.fixed,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryGreen,
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        primaryColor: const Color(0xFF1a5d1a),
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1a5d1a),
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          elevation: 0,
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          selectedItemColor: Color(0xFF1a5d1a),
+          unselectedItemColor: Colors.grey,
         ),
       ),
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+      home: const SplashScreen(),
+      routes: {
+        '/main': (context) => const MainNavigation(),
+        '/channels': (context) => const ChannelDashboard(),
+        '/scanner': (context) => const ReceiptScannerScreen(),
+        '/chat': (context) => const AIChatScreen(),
+        '/profile': (context) => const ProfileScreen(),
+      },
     );
   }
 }
@@ -101,80 +54,104 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
-    _navigateToHome();
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    
+    _animationController.forward();
+    
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/main');
+      }
+    });
   }
 
-  _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigation()),
-      );
-    }
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryGreen,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+      backgroundColor: const Color(0xFF1a5d1a),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/images/betwizz_logo.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(
+                          Icons.sports_soccer,
+                          size: 60,
+                          color: Color(0xFF1a5d1a),
+                        ),
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
-              child: Image.asset(
-                'assets/images/betwizz_logo.png',
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Icons.sports_soccer,
-                    size: 60,
-                    color: AppTheme.primaryGreen,
-                  );
-                },
+              const SizedBox(height: 30),
+              const Text(
+                'BETWIZZ',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 3,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'BETWIZZ',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 2,
+              const SizedBox(height: 10),
+              const Text(
+                'Sports Betting Intelligence',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                  letterSpacing: 1,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Sports Betting Intelligence',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-                letterSpacing: 1,
+              const SizedBox(height: 50),
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFffd700)),
+                strokeWidth: 3,
               ),
-            ),
-            const SizedBox(height: 40),
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -189,7 +166,7 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
+  int _selectedIndex = 0;
 
   final List<Widget> _screens = [
     const ChannelDashboard(),
@@ -201,10 +178,11 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.live_tv),
@@ -244,8 +222,8 @@ class ChannelDashboard extends StatelessWidget {
                 return const Icon(Icons.sports_soccer, color: Colors.white);
               },
             ),
-            const SizedBox(width: 8),
-            const Text('Channels'),
+            const SizedBox(width: 10),
+            const Text('Betwizz Channels'),
           ],
         ),
         actions: [
@@ -253,223 +231,218 @@ class ChannelDashboard extends StatelessWidget {
             icon: const Icon(Icons.notifications),
             onPressed: () {},
           ),
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {},
+          ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Featured Banner
-            Container(
-              height: 180,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryGreen,
-                    AppTheme.darkGreen,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/sports_background.jpg'),
-                  fit: BoxFit.cover,
-                  opacity: 0.3,
-                ),
+      body: Column(
+        children: [
+          // Featured Banner
+          Container(
+            height: 180,
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF1a5d1a).withOpacity(0.8),
+                  const Color(0xFFffd700).withOpacity(0.8),
+                ],
               ),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
+            ),
+            child: Stack(
+              children: [
+                ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.6),
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
+                  child: Image.asset(
+                    'assets/images/sports_background.jpg',
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: const Color(0xFF1a5d1a),
+                        child: const Center(
+                          child: Icon(
+                            Icons.sports,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'Live Sports Analysis',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Get expert insights and predictions',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentGold,
-                        foregroundColor: Colors.black,
-                      ),
-                      child: const Text('Watch Now'),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const Positioned(
+                  bottom: 20,
+                  left: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'LIVE BETTING INSIGHTS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Real-time analysis & predictions',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-            
-            // Live Channels Section
-            const Text(
-              'Live Channels',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+          ),
+          
+          // Channel Grid
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
+                childAspectRatio: 1.2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.2,
               ),
               itemCount: 6,
               itemBuilder: (context, index) {
                 return ChannelCard(
-                  title: 'Expert Channel ${index + 1}',
-                  subtitle: 'Live Analysis',
-                  viewers: '${(index + 1) * 234}',
+                  channelName: 'Channel ${index + 1}',
                   isLive: index < 3,
+                  viewers: '${(index + 1) * 150}',
                   imageUrl: 'assets/images/channel_${index + 1}.jpg',
                 );
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class ChannelCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String viewers;
+  final String channelName;
   final bool isLive;
+  final String viewers;
   final String imageUrl;
 
   const ChannelCard({
     super.key,
-    required this.title,
-    required this.subtitle,
-    required this.viewers,
+    required this.channelName,
     required this.isLive,
+    required this.viewers,
     required this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                image: DecorationImage(
-                  image: AssetImage(imageUrl),
-                  fit: BoxFit.cover,
-                  onError: (error, stackTrace) {},
-                ),
-                color: AppTheme.primaryGreen.withOpacity(0.1),
-              ),
-              child: Stack(
-                children: [
-                  if (isLive)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          'LIVE',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: Image.asset(
+                    imageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(
+                            Icons.sports_soccer,
+                            size: 40,
+                            color: Color(0xFF1a5d1a),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
+                  ),
+                ),
+                if (isLive)
                   Positioned(
-                    bottom: 8,
-                    left: 8,
+                    top: 8,
+                    right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.visibility, color: Colors.white, size: 12),
-                          const SizedBox(width: 4),
+                          Icon(Icons.circle, color: Colors.white, size: 8),
+                          SizedBox(width: 4),
                           Text(
-                            viewers,
-                            style: const TextStyle(color: Colors.white, fontSize: 10),
+                            'LIVE',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  channelName,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 14,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 10,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.visibility, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$viewers viewers',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -488,144 +461,154 @@ class ReceiptScannerScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Receipt Scanner'),
-        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Bookmaker Selection
-            const Text(
-              'Select Your Bookmaker',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 2.5,
+      body: Column(
+        children: [
+          // Bookmaker Selection
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildBookmakerCard('Betway', 'assets/icons/betway.png'),
-                _buildBookmakerCard('Hollywood', 'assets/icons/hollywood.png'),
-                _buildBookmakerCard('Supabets', 'assets/icons/supabets.png'),
-                _buildBookmakerCard('Sportingbet', 'assets/icons/sportingbet.png'),
+                const Text(
+                  'Select Bookmaker',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  children: [
+                    _buildBookmakerIcon('Betway', 'assets/icons/betway.png'),
+                    _buildBookmakerIcon('Hollywood', 'assets/icons/hollywood.png'),
+                    _buildBookmakerIcon('Supabets', 'assets/icons/supabets.png'),
+                    _buildBookmakerIcon('Sportingbet', 'assets/icons/sportingbet.png'),
+                  ],
+                ),
               ],
             ),
-            
-            const SizedBox(height: 32),
-            
-            // Camera Preview Area
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.primaryGreen, width: 2),
-                ),
+          ),
+          
+          // Camera Preview
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[400]!),
+              ),
+              child: const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.camera_alt,
                       size: 64,
-                      color: AppTheme.primaryGreen,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Position your betting slip here',
+                    SizedBox(height: 16),
+                    Text(
+                      'Position your bet slip in the camera view',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Make sure all text is clearly visible',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary,
+                        color: Colors.grey,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Scan Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Camera functionality coming soon!'),
-                      backgroundColor: AppTheme.primaryGreen,
+          ),
+          
+          // Action Buttons
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text('Gallery'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[600],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('Scan Receipt'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryGreen,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.camera),
+                    label: const Text('Scan Receipt'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1a5d1a),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBookmakerCard(String name, String iconPath) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryGreen.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+  Widget _buildBookmakerIcon(String name, String assetPath) {
+    return Column(
+      children: [
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
-              child: Image.asset(
-                iconPath,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.sports_soccer,
-                    color: AppTheme.primaryGreen,
-                  );
-                },
-              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              assetPath,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.casino,
+                  color: Color(0xFF1a5d1a),
+                );
+              },
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 4),
+        Text(
+          name,
+          style: const TextStyle(fontSize: 10),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
@@ -644,13 +627,10 @@ class _AIChatScreenState extends State<AIChatScreen> {
   @override
   void initState() {
     super.initState();
-    _addWelcomeMessage();
-  }
-
-  void _addWelcomeMessage() {
+    // Add welcome message
     _messages.add(
       ChatMessage(
-        text: "Sawubona! I'm Mfethu, your AI betting assistant. How can I help you with your sports betting strategy today?",
+        text: "Sawubona! I'm Mfethu, your AI betting assistant. How can I help you today?",
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -675,7 +655,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
       setState(() {
         _messages.add(
           ChatMessage(
-            text: "Thanks for your question! I'm analyzing the latest odds and trends to provide you with the best insights. This feature will be fully available soon!",
+            text: "Thanks for your question! I'm analyzing the latest betting data to provide you with insights.",
             isUser: false,
             timestamp: DateTime.now(),
           ),
@@ -694,64 +674,85 @@ class _AIChatScreenState extends State<AIChatScreen> {
           children: [
             CircleAvatar(
               radius: 16,
-              backgroundImage: const AssetImage('assets/images/mfethu_avatar.png'),
+              backgroundImage: AssetImage('assets/images/mfethu_avatar.png'),
               onBackgroundImageError: (error, stackTrace) {},
               child: const Icon(Icons.smart_toy, size: 16),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             const Text('Mfethu AI'),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Column(
         children: [
           // AI Features Banner
           Container(
-            width: double.infinity,
+            margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
               gradient: LinearGradient(
-                colors: [AppTheme.primaryGreen.withOpacity(0.1), Colors.transparent],
-              ),
-              image: const DecorationImage(
-                image: AssetImage('assets/images/ai_background.jpg'),
-                fit: BoxFit.cover,
-                opacity: 0.1,
+                colors: [
+                  const Color(0xFF1a5d1a).withOpacity(0.1),
+                  const Color(0xFFffd700).withOpacity(0.1),
+                ],
               ),
             ),
-            child: Column(
+            child: Row(
               children: [
-                const Text(
-                  'AI-Powered Features',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'AI Betting Assistant',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Get predictions & analysis',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    Chip(
-                      label: const Text('Strategy Tips', style: TextStyle(fontSize: 10)),
-                      backgroundColor: AppTheme.primaryGreen.withOpacity(0.2),
-                    ),
-                    Chip(
-                      label: const Text('Odds Analysis', style: TextStyle(fontSize: 10)),
-                      backgroundColor: AppTheme.accentGold.withOpacity(0.3),
-                    ),
-                    Chip(
-                      label: const Text('Predictions', style: TextStyle(fontSize: 10)),
-                      backgroundColor: AppTheme.lightGreen.withOpacity(0.2),
-                    ),
-                  ],
+                const Icon(
+                  Icons.psychology,
+                  color: Color(0xFF1a5d1a),
+                  size: 32,
                 ),
               ],
             ),
           ),
           
-          // Messages List
+          // Suggested Actions
+          Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _buildSuggestionChip('Match Predictions'),
+                _buildSuggestionChip('Odds Analysis'),
+                _buildSuggestionChip('Team Stats'),
+                _buildSuggestionChip('Betting Tips'),
+              ],
+            ),
+          ),
+          
+          // Messages
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -767,14 +768,8 @@ class _AIChatScreenState extends State<AIChatScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              color: Colors.grey[50],
+              border: Border(top: BorderSide(color: Colors.grey[300]!)),
             ),
             child: Row(
               children: [
@@ -782,28 +777,47 @@ class _AIChatScreenState extends State<AIChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Ask Mfethu about betting strategies...',
+                      hintText: 'Ask Mfethu anything...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(color: AppTheme.primaryGreen),
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
                 const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: AppTheme.primaryGreen,
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: _sendMessage,
-                  ),
+                FloatingActionButton(
+                  onPressed: _sendMessage,
+                  backgroundColor: const Color(0xFF1a5d1a),
+                  mini: true,
+                  child: const Icon(Icons.send, color: Colors.white),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestionChip(String text) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      child: ActionChip(
+        label: Text(text),
+        onPressed: () {
+          _messageController.text = text;
+          _sendMessage();
+        },
+        backgroundColor: const Color(0xFF1a5d1a).withOpacity(0.1),
+        side: const BorderSide(color: Color(0xFF1a5d1a)),
       ),
     );
   }
@@ -828,30 +842,38 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!message.isUser) ...[
             CircleAvatar(
               radius: 16,
-              backgroundColor: AppTheme.primaryGreen,
+              backgroundColor: const Color(0xFF1a5d1a),
               child: const Icon(Icons.smart_toy, color: Colors.white, size: 16),
             ),
             const SizedBox(width: 8),
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.all(12),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isUser ? AppTheme.primaryGreen : Colors.grey[200],
-                borderRadius: BorderRadius.circular(16),
+                color: message.isUser
+                    ? const Color(0xFF1a5d1a)
+                    : Colors.grey[200],
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 message.text,
                 style: TextStyle(
-                  color: message.isUser ? Colors.white : AppTheme.textPrimary,
+                  color: message.isUser ? Colors.white : Colors.black87,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -860,8 +882,8 @@ class ChatBubble extends StatelessWidget {
             const SizedBox(width: 8),
             CircleAvatar(
               radius: 16,
-              backgroundColor: AppTheme.accentGold,
-              child: const Icon(Icons.person, color: Colors.black, size: 16),
+              backgroundColor: Colors.grey[300],
+              child: const Icon(Icons.person, color: Colors.grey, size: 16),
             ),
           ],
         ],
@@ -878,35 +900,28 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Profile Header
+            // User Info
             Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
                   Stack(
                     children: [
                       CircleAvatar(
-                        radius: 40,
-                        backgroundImage: const AssetImage('assets/images/user_avatar.png'),
+                        radius: 50,
+                        backgroundImage: AssetImage('assets/images/user_avatar.png'),
                         onBackgroundImageError: (error, stackTrace) {},
-                        child: const Icon(Icons.person, size: 40),
+                        child: const Icon(Icons.person, size: 50),
                       ),
                       Positioned(
                         bottom: 0,
@@ -914,7 +929,7 @@ class ProfileScreen extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(
-                            color: AppTheme.primaryGreen,
+                            color: Colors.green,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -928,106 +943,115 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'John Doe',
+                    'John Mbeki',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
                     ),
                   ),
                   const Text(
                     'Premium Member',
                     style: TextStyle(
-                      color: AppTheme.primaryGreen,
-                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                      fontSize: 16,
                     ),
                   ),
                 ],
               ),
             ),
             
-            const SizedBox(height: 24),
-            
-            // Statistics
-            Row(
-              children: [
-                Expanded(child: _buildStatCard('Bets Tracked', '47', Icons.receipt)),
-                const SizedBox(width: 12),
-                Expanded(child: _buildStatCard('Win Rate', '68%', Icons.trending_up)),
-                const SizedBox(width: 12),
-                Expanded(child: _buildStatCard('Profit', 'R1,240', Icons.attach_money)),
-              ],
+            // Stats
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1a5d1a).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildStatItem('Predictions', '127', Icons.trending_up),
+                  _buildStatItem('Win Rate', '73%', Icons.emoji_events),
+                  _buildStatItem('Streak', '5', Icons.local_fire_department),
+                ],
+              ),
             ),
             
             const SizedBox(height: 24),
             
             // Menu Items
-            _buildMenuSection('Account', [
-              _buildMenuItem(Icons.person_outline, 'Personal Information', () {}),
-              _buildMenuItem(Icons.security, 'Security Settings', () {}),
-              _buildMenuItem(Icons.payment, 'Payment Methods', () {}),
-              _buildMenuItem(Icons.subscriptions, 'Subscription', () {}),
-            ]),
-            
-            const SizedBox(height: 16),
-            
-            _buildMenuSection('Preferences', [
-              _buildMenuItem(Icons.notifications_outlined, 'Notifications', () {}),
-              _buildMenuItem(Icons.language, 'Language', () {}),
-              _buildMenuItem(Icons.dark_mode_outlined, 'Theme', () {}),
-            ]),
-            
-            const SizedBox(height: 16),
-            
-            _buildMenuSection('Support', [
-              _buildMenuItem(Icons.help_outline, 'Help Center', () {}),
-              _buildMenuItem(Icons.feedback_outlined, 'Feedback', () {}),
-              _buildMenuItem(Icons.info_outline, 'About', () {}),
-            ]),
-            
-            const SizedBox(height: 24),
-            
-            // Responsible Gambling Warning
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.warning_amber, color: Colors.orange[700]),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Bet responsibly. Gambling can be addictive.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            _buildMenuItem(
+              icon: Icons.history,
+              title: 'Betting History',
+              subtitle: 'View your past bets',
+              color: Colors.blue,
+            ),
+            _buildMenuItem(
+              icon: Icons.analytics,
+              title: 'Statistics',
+              subtitle: 'Your betting analytics',
+              color: Colors.green,
+            ),
+            _buildMenuItem(
+              icon: Icons.payment,
+              title: 'Wallet',
+              subtitle: 'Manage payments',
+              color: Colors.orange,
+            ),
+            _buildMenuItem(
+              icon: Icons.notifications,
+              title: 'Notifications',
+              subtitle: 'Customize alerts',
+              color: Colors.purple,
+            ),
+            _buildMenuItem(
+              icon: Icons.help,
+              title: 'Help & Support',
+              subtitle: 'Get assistance',
+              color: Colors.red,
+            ),
+            _buildMenuItem(
+              icon: Icons.privacy_tip,
+              title: 'Privacy Policy',
+              subtitle: 'Your data protection',
+              color: Colors.teal,
             ),
             
             const SizedBox(height: 24),
             
-            // Logout Button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.red),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.red),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+            // Responsible Gambling
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.orange),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Responsible Gambling',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        Text(
+                          'Remember to bet responsibly. Set limits and seek help if needed.',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -1036,153 +1060,55 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+  Widget _buildStatItem(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1a5d1a),
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryGreen.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: AppTheme.primaryGreen),
+          child: Icon(icon, color: Colors.white, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
-            ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
           ),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 10,
-              color: AppTheme.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildMenuSection(String title, List<Widget> items) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-          ),
-          ...items,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+  }) {
     return ListTile(
-      leading: Icon(icon, color: AppTheme.primaryGreen),
-      title: Text(title),
-      trailing: const Icon(Icons.chevron_right, color: AppTheme.textSecondary),
-      onTap: onTap,
-    );
-  }
-}
-
-// Chat Message Model
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime timestamp;
-
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
-  });
-}
-
-class ChatBubble extends StatelessWidget {
-  final ChatMessage message;
-
-  const ChatBubble({super.key, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          if (!message.isUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppTheme.primaryGreen,
-              child: const Icon(Icons.smart_toy, color: Colors.white, size: 16),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: message.isUser ? AppTheme.primaryGreen : Colors.grey[200],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  color: message.isUser ? Colors.white : AppTheme.textPrimary,
-                ),
-              ),
-            ),
-          ),
-          if (message.isUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppTheme.accentGold,
-              child: const Icon(Icons.person, color: Colors.black, size: 16),
-            ),
-          ],
-        ],
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: color),
       ),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {},
     );
   }
 }

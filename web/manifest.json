@@ -1,11 +1,11 @@
 {
   "name": "Betwizz - Sports Betting Intelligence",
   "short_name": "Betwizz",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#2E7D32",
-  "theme_color": "#2E7D32",
-  "description": "Sports Betting Intelligence Platform for South Africa",
+  "background_color": "#1a5d1a",
+  "theme_color": "#1a5d1a",
+  "description": "Sports betting intelligence platform for South Africa",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "icons": [

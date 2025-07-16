@@ -1,0 +1,12 @@
+{
+  "name": "betwizz-flutter-web",
+  "version": "1.0.0",
+  "description": "Sports betting intelligence platform for South Africa",
+  "scripts": {
+    "build": "flutter build web --release --web-renderer html",
+    "serve": "flutter run -d web-server --web-port 3000"
+  },
+  "keywords": ["flutter", "sports", "betting", "south-africa", "web"],
+  "author": "Betwizz Team",
+  "license": "MIT"
+}
