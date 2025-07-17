@@ -1,12 +1,32 @@
 {
   "name": "betwizz-flutter-web",
   "version": "1.0.0",
-  "description": "Sports betting intelligence platform for South Africa",
+  "description": "Betwizz Flutter Web Application - Sports Betting Intelligence Platform",
   "scripts": {
     "build": "flutter build web --release --web-renderer html",
-    "serve": "flutter run -d web-server --web-port 3000"
+    "deploy": "./scripts/deploy.sh",
+    "deploy:prod": "./scripts/deploy.sh --production",
+    "deploy:preview": "./scripts/deploy.sh",
+    "test": "flutter test",
+    "analyze": "flutter analyze",
+    "clean": "flutter clean && rm -rf build/",
+    "dev": "flutter run -d web-server --web-port 3000",
+    "serve": "cd build/web && python3 -m http.server 8000",
+    "install:vercel": "npm install -g vercel@latest",
+    "setup": "flutter pub get && flutter config --enable-web"
   },
-  "keywords": ["flutter", "sports", "betting", "south-africa", "web"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/betwizz-flutter-app.git"
+  },
+  "keywords": ["flutter", "web", "sports-betting", "south-africa", "ai", "predictions", "vercel"],
   "author": "Betwizz Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^33.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
 }

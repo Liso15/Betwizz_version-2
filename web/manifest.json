@@ -1,23 +1,43 @@
 {
   "name": "Betwizz - Sports Betting Intelligence",
   "short_name": "Betwizz",
+  "description": "Advanced sports betting intelligence platform for South Africa with AI-powered predictions and live analysis",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a5d1a",
   "theme_color": "#1a5d1a",
-  "description": "Sports betting intelligence platform for South Africa",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
+  "scope": "/",
+  "lang": "en-ZA",
+  "dir": "ltr",
+  "categories": ["sports", "entertainment", "productivity"],
+  "screenshots": [
+    {
+      "src": "icons/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "icons/screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
   "icons": [
     {
       "src": "icons/Icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icons/Icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icons/Icon-maskable-192.png",
@@ -30,6 +50,53 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Channels",
+      "short_name": "Channels",
+      "description": "View live betting channels",
+      "url": "/channels",
+      "icons": [
+        {
+          "src": "icons/shortcut-channels.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Receipt Scanner",
+      "short_name": "Scanner",
+      "description": "Scan betting receipts",
+      "url": "/scanner",
+      "icons": [
+        {
+          "src": "icons/shortcut-scanner.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mfethu AI",
+      "short_name": "AI Chat",
+      "description": "Chat with AI assistant",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "icons/shortcut-ai.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

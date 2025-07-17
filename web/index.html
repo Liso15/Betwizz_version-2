@@ -1,64 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
+  
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Betwizz - Sports betting intelligence platform for South Africa">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Betwizz - Advanced sports betting intelligence platform for South Africa. Get AI-powered predictions, live analysis, and expert insights.">
+  <meta name="keywords" content="sports betting, South Africa, AI predictions, betting tips, football, rugby, cricket">
+  <meta name="author" content="Betwizz Team">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Betwizz - Sports Betting Intelligence">
+  <meta property="og:description" content="Advanced sports betting intelligence platform for South Africa">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://betwizz.vercel.app">
+  <meta property="og:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Betwizz - Sports Betting Intelligence">
+  <meta name="twitter:description" content="Advanced sports betting intelligence platform for South Africa">
+  <meta name="twitter:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
+  
+  <!-- iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Betwizz">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-192.png">
+  
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>Betwizz - Sports Betting Intelligence</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  
+  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
-
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#1a5d1a">
+  <meta name="msapplication-TileColor" content="#1a5d1a">
+  
+  <title>Betwizz - Sports Betting Intelligence Platform</title>
+  
+  <!-- Preload Critical Resources -->
+  <link rel="preload" href="main.dart.js" as="script">
+  <link rel="preload" href="flutter.js" as="script">
+  
+  <!-- Critical CSS -->
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      background-color: #1a5d1a;
-      font-family: 'Roboto', sans-serif;
     }
     
-    .loading {
+    html, body {
+      height: 100%;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #1a5d1a;
+      color: white;
+      overflow: hidden;
+    }
+    
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a5d1a 0%, #2e7d32 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      color: white;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    #loading.fade-out {
+      opacity: 0;
+      pointer-events: none;
     }
     
     .loading-logo {
       width: 120px;
       height: 120px;
-      margin-bottom: 20px;
-      background: url('icons/Icon-192.png') center/contain no-repeat;
+      background: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: pulse 2s infinite;
     }
     
-    .loading-text {
-      font-size: 18px;
-      margin-bottom: 20px;
+    .loading-logo img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+    
+    .loading-logo-fallback {
+      font-size: 48px;
+      color: #1a5d1a;
+    }
+    
+    .loading-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    
+    .loading-subtitle {
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 40px;
+      text-align: center;
     }
     
     .loading-spinner {
@@ -70,33 +136,182 @@
       animation: spin 1s linear infinite;
     }
     
+    .loading-progress {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .error-container {
+      max-width: 400px;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #ff6b6b;
+    }
+    
+    .error-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #ff6b6b;
+    }
+    
+    .error-message {
+      font-size: 16px;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+    
+    .retry-button {
+      background: #ffd700;
+      color: #1a5d1a;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .retry-button:hover {
+      background: #ffed4e;
+    }
+    
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @media (max-width: 480px) {
+      .loading-logo {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .loading-title {
+        font-size: 28px;
+      }
+      
+      .loading-subtitle {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div id="loading" class="loading">
-    <div class="loading-logo"></div>
-    <div class="loading-text">Loading Betwizz...</div>
+  <div id="loading">
+    <div class="loading-logo">
+      <img src="icons/Icon-192.png" alt="Betwizz Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="loading-logo-fallback" style="display: none;">⚽</div>
+    </div>
+    <div class="loading-title">BETWIZZ</div>
+    <div class="loading-subtitle">Sports Betting Intelligence</div>
     <div class="loading-spinner"></div>
+    <div class="loading-progress" id="loadingProgress">Initializing...</div>
+  </div>
+
+  <div id="error-container" style="display: none;">
+    <div class="error-container">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">Loading Error</div>
+      <div class="error-message" id="errorMessage">Failed to load the application. Please check your internet connection and try again.</div>
+      <button class="retry-button" onclick="location.reload()">Retry</button>
+    </div>
   </div>
 
   <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('flutter_service_worker.js')
+          .then(function(registration) {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(function(error) {
+            console.log('ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+
+    // Loading Progress Updates
+    function updateProgress(message) {
+      const progressElement = document.getElementById('loadingProgress');
+      if (progressElement) {
+        progressElement.textContent = message;
+      }
+    }
+
+    // Error Handling
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-container').style.display = 'flex';
+      document.getElementById('errorMessage').textContent = message;
+    }
+
+    // Flutter Loading Script
     window.addEventListener('load', function(ev) {
+      updateProgress('Loading Flutter engine...');
+      
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            document.getElementById('loading').style.display = 'none';
+          updateProgress('Initializing application...');
+          
+          engineInitializer.initializeEngine({
+            hostElement: document.body,
+          }).then(function(appRunner) {
+            updateProgress('Starting Betwizz...');
+            
+            // Hide loading screen with fade effect
+            setTimeout(function() {
+              const loadingElement = document.getElementById('loading');
+              loadingElement.classList.add('fade-out');
+              
+              setTimeout(function() {
+                loadingElement.style.display = 'none';
+              }, 500);
+            }, 500);
+            
             appRunner.runApp();
+          }).catch(function(error) {
+            console.error('Failed to initialize Flutter engine:', error);
+            showError('Failed to initialize the application engine.');
           });
         }
+      }).catch(function(error) {
+        console.error('Failed to load Flutter entrypoint:', error);
+        showError('Failed to load application resources.');
       });
+    });
+
+    // Global Error Handler
+    window.addEventListener('error', function(event) {
+      console.error('Global error:', event.error);
+      if (document.getElementById('loading').style.display !== 'none') {
+        showError('An unexpected error occurred while loading the application.');
+      }
+    });
+
+    // Unhandled Promise Rejection Handler
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error('Unhandled promise rejection:', event.reason);
+      if (document.getElementById('loading').style.display !== 'none') {
+        showError('A network error occurred. Please check your connection.');
+      }
     });
   </script>
 </body>

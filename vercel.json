@@ -1,20 +1,65 @@
 {
   "version": 2,
+  "name": "betwizz-flutter-app",
   "builds": [
     {
-      "src": "web/**",
+      "src": "build/web/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/icons/(.*)",
+      "dest": "/icons/$1"
+    },
+    {
+      "src": "/canvaskit/(.*)",
+      "dest": "/canvaskit/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|html|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|map))",
+      "dest": "/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
   ],
   "functions": {
-    "web/index.html": {
+    "build/web/index.html": {
       "maxDuration": 30
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
 }
