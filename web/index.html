@@ -1,191 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <base href="$FLUTTER_BASE_HREF">
-  
+  <!-- Basic Meta Tags -->
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="Betwizz - Advanced sports betting intelligence platform for South Africa. Get AI-powered predictions, live analysis, and expert insights.">
-  <meta name="keywords" content="sports betting, South Africa, AI predictions, betting tips, football, rugby, cricket">
+  <!-- Primary Meta Tags -->
+  <title>Betwizz - Sports Betting Intelligence Platform | South Africa</title>
+  <meta name="title" content="Betwizz - Sports Betting Intelligence Platform | South Africa">
+  <meta name="description" content="Transform your sports betting experience with Betwizz - South Africa's premier AI-powered betting intelligence platform. Get expert predictions, live channels, and smart analytics.">
+  <meta name="keywords" content="sports betting, South Africa, AI predictions, betting tips, live sports, Mfethu AI, receipt scanner, betting intelligence">
   <meta name="author" content="Betwizz Team">
   <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
   
-  <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="Betwizz - Sports Betting Intelligence">
-  <meta property="og:description" content="Advanced sports betting intelligence platform for South Africa">
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://betwizz.vercel.app">
-  <meta property="og:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
+  <meta property="og:url" content="https://betwizz.vercel.app/">
+  <meta property="og:title" content="Betwizz - Sports Betting Intelligence Platform">
+  <meta property="og:description" content="Transform your sports betting experience with AI-powered predictions and live sports channels in South Africa.">
+  <meta property="og:image" content="https://betwizz.vercel.app/assets/images/betwizz-og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Betwizz">
+  <meta property="og:locale" content="en_ZA">
   
-  <!-- Twitter Card Meta Tags -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Betwizz - Sports Betting Intelligence">
-  <meta name="twitter:description" content="Advanced sports betting intelligence platform for South Africa">
-  <meta name="twitter:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://betwizz.vercel.app/">
+  <meta property="twitter:title" content="Betwizz - Sports Betting Intelligence Platform">
+  <meta property="twitter:description" content="Transform your sports betting experience with AI-powered predictions and live sports channels in South Africa.">
+  <meta property="twitter:image" content="https://betwizz.vercel.app/assets/images/betwizz-twitter-card.png">
+  <meta property="twitter:creator" content="@BetwizzSA">
   
-  <!-- iOS Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Betwizz">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/Icon-192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-192.png">
+  <!-- Favicon and Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2E7D32">
+  <meta name="msapplication-TileColor" content="#2E7D32">
+  <meta name="msapplication-config" content="/browserconfig.xml">
   
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.png">
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.sportradar.com">
   
-  <!-- Manifest -->
-  <link rel="manifest" href="manifest.json">
+  <!-- DNS Prefetch -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link rel="dns-prefetch" href="//fonts.gstatic.com">
+  <link rel="dns-prefetch" href="//api.sportradar.com">
   
-  <!-- Theme Color -->
-  <meta name="theme-color" content="#1a5d1a">
-  <meta name="msapplication-TileColor" content="#1a5d1a">
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/assets/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/images/betwizz_logo.png" as="image">
   
-  <title>Betwizz - Sports Betting Intelligence Platform</title>
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Betwizz",
+    "description": "Sports betting intelligence platform for South Africa",
+    "url": "https://betwizz.vercel.app",
+    "applicationCategory": "Sports",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "ZAR"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Betwizz Team"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Betwizz",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://betwizz.vercel.app/assets/images/betwizz_logo.png"
+      }
+    }
+  }
+  </script>
   
-  <!-- Preload Critical Resources -->
-  <link rel="preload" href="main.dart.js" as="script">
-  <link rel="preload" href="flutter.js" as="script">
-  
-  <!-- Critical CSS -->
+  <!-- Critical CSS (inline for performance) -->
   <style>
-    * {
-      box-sizing: border-box;
+    /* Critical CSS for loading screen */
+    body {
       margin: 0;
       padding: 0;
-    }
-    
-    html, body {
-      height: 100%;
       font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background-color: #1a5d1a;
-      color: white;
+      background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
       overflow: hidden;
     }
     
-    #loading {
+    .loading-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #1a5d1a 0%, #2e7d32 100%);
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
       z-index: 9999;
       transition: opacity 0.5s ease-out;
-    }
-    
-    #loading.fade-out {
-      opacity: 0;
-      pointer-events: none;
     }
     
     .loading-logo {
       width: 120px;
       height: 120px;
-      background: white;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       margin-bottom: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       animation: pulse 2s infinite;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
     }
     
-    .loading-logo img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-    }
-    
-    .loading-logo-fallback {
-      font-size: 48px;
-      color: #1a5d1a;
-    }
-    
-    .loading-title {
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      letter-spacing: 2px;
+    .loading-text {
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
       text-align: center;
-    }
-    
-    .loading-subtitle {
-      font-size: 16px;
-      opacity: 0.8;
-      margin-bottom: 40px;
-      text-align: center;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
     
     .loading-spinner {
       width: 40px;
       height: 40px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top: 3px solid #ffd700;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top: 4px solid white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
     
     .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
       margin-top: 20px;
-      text-align: center;
-      font-size: 14px;
-      opacity: 0.7;
+      overflow: hidden;
     }
     
-    .error-container {
-      max-width: 400px;
-      text-align: center;
-      padding: 20px;
-    }
-    
-    .error-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-      color: #ff6b6b;
-    }
-    
-    .error-title {
-      font-size: 24px;
-      margin-bottom: 10px;
-      color: #ff6b6b;
-    }
-    
-    .error-message {
-      font-size: 16px;
-      margin-bottom: 20px;
-      opacity: 0.8;
-    }
-    
-    .retry-button {
-      background: #ffd700;
-      color: #1a5d1a;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    
-    .retry-button:hover {
-      background: #ffed4e;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .loading-progress-bar {
+      height: 100%;
+      background: white;
+      border-radius: 2px;
+      animation: progress 3s ease-out forwards;
     }
     
     @keyframes pulse {
@@ -193,126 +161,164 @@
       50% { transform: scale(1.05); }
     }
     
-    @media (max-width: 480px) {
-      .loading-logo {
-        width: 100px;
-        height: 100px;
-      }
-      
-      .loading-title {
-        font-size: 28px;
-      }
-      
-      .loading-subtitle {
-        font-size: 14px;
-      }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    .error-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f44336;
+      color: white;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    .error-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    
+    .error-message {
+      font-size: 16px;
+      margin-bottom: 24px;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+    
+    .error-button {
+      background: white;
+      color: #f44336;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .error-button:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Hide Flutter loading until app is ready */
+    #loading {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div id="loading">
-    <div class="loading-logo">
-      <img src="icons/Icon-192.png" alt="Betwizz Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-      <div class="loading-logo-fallback" style="display: none;">⚽</div>
-    </div>
-    <div class="loading-title">BETWIZZ</div>
-    <div class="loading-subtitle">Sports Betting Intelligence</div>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-container">
+    <img src="/assets/images/betwizz_logo.png" alt="Betwizz Logo" class="loading-logo" onerror="this.style.display='none'">
+    <div class="loading-text">Betwizz</div>
     <div class="loading-spinner"></div>
-    <div class="loading-progress" id="loadingProgress">Initializing...</div>
-  </div>
-
-  <div id="error-container" style="display: none;">
-    <div class="error-container">
-      <div class="error-icon">⚠️</div>
-      <div class="error-title">Loading Error</div>
-      <div class="error-message" id="errorMessage">Failed to load the application. Please check your internet connection and try again.</div>
-      <button class="retry-button" onclick="location.reload()">Retry</button>
+    <div class="loading-progress">
+      <div class="loading-progress-bar"></div>
     </div>
   </div>
-
+  
+  <!-- Error Screen -->
+  <div id="error-screen" class="error-container">
+    <div class="error-title">Oops! Something went wrong</div>
+    <div class="error-message">
+      We're having trouble loading Betwizz. Please check your internet connection and try again.
+    </div>
+    <button class="error-button" onclick="location.reload()">Retry</button>
+  </div>
+  
+  <!-- Flutter App Container -->
+  <div id="loading"></div>
+  
+  <!-- Flutter Web Configuration -->
   <script>
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('flutter_service_worker.js')
-          .then(function(registration) {
-            console.log('ServiceWorker registration successful');
-          })
-          .catch(function(error) {
-            console.log('ServiceWorker registration failed: ', error);
-          });
-      });
+    // Flutter web configuration
+    window.flutterConfiguration = {
+      canvasKitBaseUrl: "/canvaskit/",
+      renderer: "html"
+    };
+    
+    // Loading management
+    let loadingTimeout;
+    let appLoaded = false;
+    
+    function showError() {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('error-screen').style.display = 'flex';
     }
-
-    // Loading Progress Updates
-    function updateProgress(message) {
-      const progressElement = document.getElementById('loadingProgress');
-      if (progressElement) {
-        progressElement.textContent = message;
-      }
-    }
-
-    // Error Handling
-    function showError(message) {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('error-container').style.display = 'flex';
-      document.getElementById('errorMessage').textContent = message;
-    }
-
-    // Flutter Loading Script
-    window.addEventListener('load', function(ev) {
-      updateProgress('Loading Flutter engine...');
+    
+    function hideLoading() {
+      if (appLoaded) return;
+      appLoaded = true;
       
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          updateProgress('Initializing application...');
-          
-          engineInitializer.initializeEngine({
-            hostElement: document.body,
-          }).then(function(appRunner) {
-            updateProgress('Starting Betwizz...');
-            
-            // Hide loading screen with fade effect
-            setTimeout(function() {
-              const loadingElement = document.getElementById('loading');
-              loadingElement.classList.add('fade-out');
-              
-              setTimeout(function() {
-                loadingElement.style.display = 'none';
-              }, 500);
-            }, 500);
-            
-            appRunner.runApp();
-          }).catch(function(error) {
-            console.error('Failed to initialize Flutter engine:', error);
-            showError('Failed to initialize the application engine.');
+      const loadingScreen = document.getElementById('loading-screen');
+      loadingScreen.style.opacity = '0';
+      
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 500);
+      
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+    }
+    
+    // Set loading timeout (30 seconds)
+    loadingTimeout = setTimeout(() => {
+      if (!appLoaded) {
+        showError();
+      }
+    }, 30000);
+    
+    // Listen for Flutter app ready
+    window.addEventListener('flutter-first-frame', hideLoading);
+    
+    // Fallback for older Flutter versions
+    setTimeout(() => {
+      if (document.querySelector('flutter-view') || document.querySelector('flt-scene-host')) {
+        hideLoading();
+      }
+    }, 5000);
+  </script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('flutter-first-frame', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js?v=' + Date.now())
+          .then((registration) => {
+            console.log('Service Worker registered successfully:', registration);
+          })
+          .catch((error) => {
+            console.log('Service Worker registration failed:', error);
           });
-        }
-      }).catch(function(error) {
-        console.error('Failed to load Flutter entrypoint:', error);
-        showError('Failed to load application resources.');
       });
-    });
-
-    // Global Error Handler
-    window.addEventListener('error', function(event) {
-      console.error('Global error:', event.error);
-      if (document.getElementById('loading').style.display !== 'none') {
-        showError('An unexpected error occurred while loading the application.');
-      }
-    });
-
-    // Unhandled Promise Rejection Handler
-    window.addEventListener('unhandledrejection', function(event) {
-      console.error('Unhandled promise rejection:', event.reason);
-      if (document.getElementById('loading').style.display !== 'none') {
-        showError('A network error occurred. Please check your connection.');
-      }
-    });
+    }
+  </script>
+  
+  <!-- Flutter Web Bootstrap -->
+  <script src="flutter_bootstrap.js" async></script>
+  
+  <!-- Analytics (placeholder for future implementation) -->
+  <script>
+    // Google Analytics or other analytics can be added here
+    // gtag('config', 'GA_MEASUREMENT_ID');
   </script>
 </body>
 </html>
