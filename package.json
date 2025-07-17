@@ -4,31 +4,34 @@
   "description": "Betwizz Flutter Web Application - Sports Betting Intelligence Platform",
   "main": "index.js",
   "scripts": {
-    "build": "flutter build web --release --web-renderer html --base-href / --dart-define=FLUTTER_WEB_USE_SKIA=false",
-    "build:prod": "flutter build web --release --web-renderer html --base-href / --dart-define=FLUTTER_WEB_USE_SKIA=false --dart-define=FLUTTER_WEB_AUTO_DETECT=false --source-maps",
-    "build:dev": "flutter build web --debug --web-renderer html --base-href / --source-maps",
-    "build:profile": "flutter build web --profile --web-renderer html --base-href / --source-maps",
+    "build": "npm run prebuild && flutter build web --release --web-renderer html --base-href / --dart-define=FLUTTER_WEB_USE_SKIA=false && npm run postbuild",
+    "build:prod": "npm run prebuild && flutter build web --release --web-renderer html --base-href / --dart-define=FLUTTER_WEB_USE_SKIA=false --dart-define=FLUTTER_WEB_AUTO_DETECT=false --source-maps && npm run postbuild",
+    "build:dev": "npm run prebuild && flutter build web --debug --web-renderer html --base-href / --source-maps",
+    "build:profile": "npm run prebuild && flutter build web --profile --web-renderer html --base-href / --source-maps",
     "build:analyze": "flutter build web --release --analyze-size --web-renderer html",
-    "prebuild": "flutter clean && flutter pub get && flutter config --enable-web",
-    "postbuild": "npm run optimize:assets && npm run generate:sitemap",
+    "prebuild": "npm run setup && npm run clean",
+    "postbuild": "npm run optimize:assets && npm run generate:sitemap && npm run verify:build",
     "optimize:assets": "node scripts/optimize-assets.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
+    "verify:build": "node scripts/verify-build.js",
     "deploy": "./scripts/deploy.sh",
     "deploy:prod": "./scripts/deploy.sh --production",
     "deploy:preview": "./scripts/deploy.sh",
     "test": "flutter test",
     "test:web": "flutter test --platform chrome",
     "analyze": "flutter analyze --fatal-infos",
-    "clean": "flutter clean && rm -rf build/ && rm -rf .dart_tool/",
+    "clean": "flutter clean && rm -rf build/ && rm -rf .dart_tool/ && rm -rf node_modules/.cache",
     "dev": "flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0",
     "serve": "cd build/web && python3 -m http.server 8000",
     "serve:prod": "cd build/web && npx http-server -p 8000 -c-1 --gzip",
     "install:deps": "flutter pub get && npm install",
-    "setup": "flutter pub get && flutter config --enable-web && npm install",
+    "setup": "flutter config --enable-web && flutter pub get",
     "lint": "flutter analyze && dart format --set-exit-if-changed .",
     "format": "dart format .",
     "doctor": "flutter doctor -v",
-    "upgrade": "flutter upgrade && flutter pub upgrade"
+    "upgrade": "flutter upgrade && flutter pub upgrade",
+    "check:flutter": "flutter doctor && flutter --version",
+    "check:deps": "flutter pub deps && npm list --depth=0"
   },
   "repository": {
     "type": "git",
@@ -37,13 +40,18 @@
   "keywords": ["flutter", "web", "sports-betting", "south-africa", "ai", "predictions", "vercel", "pwa"],
   "author": "Betwizz Team",
   "license": "MIT",
+  "dependencies": {
+    "cross-env": "^7.0.3"
+  },
   "devDependencies": {
     "vercel": "^33.0.1",
     "http-server": "^14.1.1",
     "imagemin": "^8.0.1",
     "imagemin-pngquant": "^9.0.2",
     "imagemin-mozjpeg": "^10.0.0",
-    "sitemap": "^7.1.1"
+    "sitemap": "^7.1.1",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1"
   },
   "engines": {
     "node": ">=18.0.0",

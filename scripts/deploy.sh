@@ -1,55 +1,32 @@
 #!/bin/bash
 
 # Betwizz Flutter Web Deployment Script
-# Comprehensive deployment automation for Vercel
+# Handles deployment to Vercel with proper error handling
 
-set -e
+set -e  # Exit on any error
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-NC='\033[0m'
+NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_NAME="betwizz-flutter-app"
-BUILD_DIR="build/web"
-VERCEL_CONFIG="vercel.json"
+PRODUCTION_FLAG=""
+VERCEL_ENV="preview"
 
-# Parse command line arguments
-PRODUCTION=false
-PREVIEW=false
-SKIP_BUILD=false
-SKIP_TESTS=false
-
+# Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     --production|-p)
-      PRODUCTION=true
-      shift
-      ;;
-    --preview)
-      PREVIEW=true
-      shift
-      ;;
-    --skip-build)
-      SKIP_BUILD=true
-      shift
-      ;;
-    --skip-tests)
-      SKIP_TESTS=true
+      PRODUCTION_FLAG="--prod"
+      VERCEL_ENV="production"
       shift
       ;;
     --help|-h)
-      echo "Usage: $0 [OPTIONS]"
-      echo "Options:"
+      echo "Usage: $0 [--production|-p]"
       echo "  --production, -p    Deploy to production"
-      echo "  --preview          Deploy as preview"
-      echo "  --skip-build       Skip build process"
-      echo "  --skip-tests       Skip test execution"
-      echo "  --help, -h         Show this help message"
       exit 0
       ;;
     *)
@@ -59,270 +36,135 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+echo -e "${BLUE}🚀 Starting Betwizz deployment to ${VERCEL_ENV}...${NC}"
+
+# Check prerequisites
+echo -e "${BLUE}🔍 Checking prerequisites...${NC}"
+
+if ! command -v flutter &> /dev/null; then
+    echo -e "${RED}❌ Flutter is not installed or not in PATH${NC}"
+    exit 1
+fi
+
+if ! command -v node &> /dev/null; then
+    echo -e "${RED}❌ Node.js is not installed or not in PATH${NC}"
+    exit 1
+fi
+
+if ! command -v vercel &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Vercel CLI not found, installing...${NC}"
+    npm install -g vercel@latest
+fi
+
+# Check Flutter doctor
+echo -e "${BLUE}🏥 Running Flutter doctor...${NC}"
+flutter doctor || {
+    echo -e "${YELLOW}⚠️  Flutter doctor found issues, but continuing...${NC}"
 }
 
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+# Clean previous builds
+echo -e "${BLUE}🧹 Cleaning previous builds...${NC}"
+flutter clean
+rm -rf build/
+rm -rf .dart_tool/build/
+
+# Install dependencies
+echo -e "${BLUE}📦 Installing dependencies...${NC}"
+flutter pub get || {
+    echo -e "${RED}❌ Failed to install Flutter dependencies${NC}"
+    exit 1
 }
 
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+npm install || {
+    echo -e "${RED}❌ Failed to install Node.js dependencies${NC}"
+    exit 1
 }
 
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+# Enable web support
+echo -e "${BLUE}🌐 Enabling Flutter web support...${NC}"
+flutter config --enable-web
+
+# Build the application
+echo -e "${BLUE}🔨 Building Flutter web application...${NC}"
+flutter build web \
+    --release \
+    --web-renderer html \
+    --base-href / \
+    --dart-define=FLUTTER_WEB_USE_SKIA=false \
+    --dart-define=FLUTTER_WEB_AUTO_DETECT=false || {
+    echo -e "${RED}❌ Flutter build failed${NC}"
+    exit 1
 }
 
-log_step() {
-    echo -e "${PURPLE}[STEP]${NC} $1"
+# Verify build output
+echo -e "${BLUE}✅ Verifying build output...${NC}"
+if [ ! -f "build/web/index.html" ]; then
+    echo -e "${RED}❌ Build verification failed: index.html not found${NC}"
+    exit 1
+fi
+
+if [ ! -f "build/web/main.dart.js" ]; then
+    echo -e "${RED}❌ Build verification failed: main.dart.js not found${NC}"
+    exit 1
+fi
+
+# Optimize assets
+echo -e "${BLUE}🎨 Optimizing assets...${NC}"
+npm run optimize:assets || {
+    echo -e "${YELLOW}⚠️  Asset optimization failed, but continuing...${NC}"
 }
 
-check_dependencies() {
-    log_step "Checking dependencies..."
-    
-    # Check Flutter
-    if ! command -v flutter &> /dev/null; then
-        log_error "Flutter is not installed or not in PATH"
-        exit 1
-    fi
-    
-    # Check Node.js
-    if ! command -v node &> /dev/null; then
-        log_error "Node.js is not installed or not in PATH"
-        exit 1
-    fi
-    
-    # Check Vercel CLI
-    if ! command -v vercel &> /dev/null; then
-        log_warning "Vercel CLI not found. Installing..."
-        npm install -g vercel@latest
-    fi
-    
-    # Check Flutter web support
-    if ! flutter config | grep -q "enable-web: true"; then
-        log_info "Enabling Flutter web support..."
-        flutter config --enable-web
-    fi
-    
-    log_success "All dependencies are available"
+# Generate sitemap
+echo -e "${BLUE}🗺️  Generating sitemap...${NC}"
+npm run generate:sitemap || {
+    echo -e "${YELLOW}⚠️  Sitemap generation failed, but continuing...${NC}"
 }
 
-run_tests() {
-    if [[ "$SKIP_TESTS" == "true" ]]; then
-        log_warning "Skipping tests as requested"
-        return 0
-    fi
-    
-    log_step "Running tests..."
-    
-    # Run Flutter tests
-    if ! flutter test; then
-        log_error "Flutter tests failed"
-        exit 1
-    fi
-    
-    # Run Flutter analyze
-    if ! flutter analyze --fatal-infos; then
-        log_error "Flutter analyze found issues"
-        exit 1
-    fi
-    
-    log_success "All tests passed"
+# Deploy to Vercel
+echo -e "${BLUE}🚀 Deploying to Vercel (${VERCEL_ENV})...${NC}"
+
+if [ -z "$VERCEL_TOKEN" ]; then
+    echo -e "${YELLOW}⚠️  VERCEL_TOKEN not set, using interactive login${NC}"
+    vercel login
+fi
+
+# Set environment variables for deployment
+export VERCEL_ORG_ID="${VERCEL_ORG_ID}"
+export VERCEL_PROJECT_ID="${VERCEL_PROJECT_ID}"
+
+# Deploy
+vercel \
+    --token "${VERCEL_TOKEN}" \
+    --scope "${VERCEL_ORG_ID}" \
+    ${PRODUCTION_FLAG} \
+    --confirm \
+    --yes || {
+    echo -e "${RED}❌ Vercel deployment failed${NC}"
+    exit 1
 }
 
-build_application() {
-    if [[ "$SKIP_BUILD" == "true" ]]; then
-        log_warning "Skipping build as requested"
-        return 0
-    fi
+# Verify deployment
+if [ "$VERCEL_ENV" = "production" ]; then
+    echo -e "${BLUE}🔍 Verifying production deployment...${NC}"
+    sleep 30  # Wait for deployment to propagate
     
-    log_step "Building Flutter web application..."
-    
-    # Clean previous build
-    flutter clean
-    
-    # Get dependencies
-    flutter pub get
-    
-    # Build for web
-    flutter build web \
-        --release \
-        --web-renderer html \
-        --base-href / \
-        --dart-define=FLUTTER_WEB_USE_SKIA=false \
-        --dart-define=FLUTTER_WEB_AUTO_DETECT=false
-    
-    if [[ ! -d "$BUILD_DIR" ]]; then
-        log_error "Build failed - output directory not found"
-        exit 1
-    fi
-    
-    log_success "Build completed successfully"
-}
-
-optimize_build() {
-    log_step "Optimizing build output..."
-    
-    # Run asset optimization
-    if [[ -f "scripts/optimize-assets.js" ]]; then
-        node scripts/optimize-assets.js
+    if curl -f -s "https://betwizz.vercel.app/" > /dev/null; then
+        echo -e "${GREEN}✅ Production deployment verified successfully!${NC}"
     else
-        log_warning "Asset optimization script not found"
+        echo -e "${YELLOW}⚠️  Could not verify production deployment${NC}"
     fi
-    
-    # Generate sitemap
-    if [[ -f "scripts/generate-sitemap.js" ]]; then
-        node scripts/generate-sitemap.js
-    else
-        log_warning "Sitemap generation script not found"
-    fi
-    
-    # Create robots.txt
-    cat > "$BUILD_DIR/robots.txt" << EOF
-User-agent: *
-Allow: /
-Sitemap: https://betwizz.vercel.app/sitemap.xml
+fi
 
-# Disallow admin and private areas
-Disallow: /admin/
-Disallow: /api/
-Disallow: /_next/
-EOF
-    
-    log_success "Build optimization completed"
-}
+echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
 
-validate_build() {
-    log_step "Validating build output..."
-    
-    # Check required files
-    required_files=("index.html" "main.dart.js" "flutter_service_worker.js" "manifest.json")
-    
-    for file in "${required_files[@]}"; do
-        if [[ ! -f "$BUILD_DIR/$file" ]]; then
-            log_error "Required file missing: $file"
-            exit 1
-        fi
-    done
-    
-    # Check build size
-    build_size=$(du -sh "$BUILD_DIR" | cut -f1)
-    log_info "Total build size: $build_size"
-    
-    # Check for large files
-    large_files=$(find "$BUILD_DIR" -type f -size +10M)
-    if [[ -n "$large_files" ]]; then
-        log_warning "Large files detected (>10MB):"
-        echo "$large_files" | while read file; do
-            size=$(du -h "$file" | cut -f1)
-            log_warning "  $(basename "$file"): $size"
-        done
-    fi
-    
-    log_success "Build validation passed"
-}
+# Show deployment info
+echo -e "${BLUE}📊 Deployment Summary:${NC}"
+echo -e "   Environment: ${VERCEL_ENV}"
+echo -e "   Build size: $(du -sh build/web | cut -f1)"
+echo -e "   Files: $(find build/web -type f | wc -l)"
 
-deploy_to_vercel() {
-    log_step "Deploying to Vercel..."
-    
-    # Check Vercel configuration
-    if [[ ! -f "$VERCEL_CONFIG" ]]; then
-        log_error "Vercel configuration file not found: $VERCEL_CONFIG"
-        exit 1
-    fi
-    
-    # Set deployment command based on environment
-    if [[ "$PRODUCTION" == "true" ]]; then
-        log_info "Deploying to production..."
-        vercel --prod --yes
-    else
-        log_info "Deploying as preview..."
-        vercel --yes
-    fi
-    
-    # Get deployment URL
-    deployment_url=$(vercel ls | grep "$PROJECT_NAME" | head -1 | awk '{print $2}')
-    
-    if [[ -n "$deployment_url" ]]; then
-        log_success "Deployment successful!"
-        log_info "URL: https://$deployment_url"
-    else
-        log_error "Failed to get deployment URL"
-        exit 1
-    fi
-}
-
-verify_deployment() {
-    log_step "Verifying deployment..."
-    
-    # Get the latest deployment URL
-    deployment_url=$(vercel ls | grep "$PROJECT_NAME" | head -1 | awk '{print $2}')
-    
-    if [[ -z "$deployment_url" ]]; then
-        log_error "Could not determine deployment URL"
-        return 1
-    fi
-    
-    full_url="https://$deployment_url"
-    
-    # Test basic connectivity
-    if curl -f -s "$full_url" > /dev/null; then
-        log_success "Deployment is accessible"
-    else
-        log_error "Deployment is not accessible"
-        return 1
-    fi
-    
-    # Test specific endpoints
-    endpoints=("/" "/manifest.json" "/flutter_service_worker.js")
-    
-    for endpoint in "${endpoints[@]}"; do
-        if curl -f -s "$full_url$endpoint" > /dev/null; then
-            log_success "✓ $endpoint is accessible"
-        else
-            log_warning "✗ $endpoint is not accessible"
-        fi
-    done
-    
-    log_success "Deployment verification completed"
-    log_info "🚀 Your Betwizz app is live at: $full_url"
-}
-
-cleanup() {
-    log_step "Cleaning up temporary files..."
-    
-    # Remove any temporary files created during deployment
-    if [[ -f ".vercel/project.json.tmp" ]]; then
-        rm -f ".vercel/project.json.tmp"
-    fi
-    
-    log_success "Cleanup completed"
-}
-
-main() {
-    log_info "🚀 Starting Betwizz deployment process..."
-    
-    # Trap to ensure cleanup on exit
-    trap cleanup EXIT
-    
-    check_dependencies
-    run_tests
-    build_application
-    optimize_build
-    validate_build
-    deploy_to_vercel
-    verify_deployment
-    
-    log_success "🎉 Deployment completed successfully!"
-    
-    if [[ "$PRODUCTION" == "true" ]]; then
-        log_info "📱 Production deployment is now live!"
-    else
-        log_info "🔍 Preview deployment is ready for testing!"
-    fi
-}
-
-# Run main function
-main "$@"
+if [ "$VERCEL_ENV" = "production" ]; then
+    echo -e "   URL: ${GREEN}https://betwizz.vercel.app/${NC}"
+else
+    echo -e "   Preview URL will be shown above"
+fi

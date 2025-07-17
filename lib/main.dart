@@ -1,48 +1,125 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'core/theme/app_theme.dart';
+import 'core/constants/app_constants.dart';
+import 'providers/channel_provider.dart';
+import 'providers/ai_chat_provider.dart';
+import 'providers/receipt_provider.dart';
+import 'screens/splash_screen.dart';
+import 'screens/main_navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize Firebase for web
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "your-api-key",
+        authDomain: "betwizz-app.firebaseapp.com",
+        projectId: "betwizz-app",
+        storageBucket: "betwizz-app.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef123456",
+        measurementId: "G-XXXXXXXXXX",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
+  // Configure Crashlytics
+  if (!kDebugMode) {
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
-  runApp(const BetwizzApp());
+
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+
+  runApp(const ProviderScope(child: BetwizzApp()));
 }
 
-class BetwizzApp extends StatelessWidget {
+class BetwizzApp extends ConsumerWidget {
   const BetwizzApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Betwizz - Sports Betting Intelligence',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        primaryColor: const Color(0xFF1a5d1a),
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1a5d1a),
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Color(0xFF1a5d1a),
-          unselectedItemColor: Colors.grey,
-        ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ChannelProvider()),
+        ChangeNotifierProvider(create: (_) => AIChatProvider()),
+        ChangeNotifierProvider(create: (_) => ReceiptProvider()),
+      ],
+      child: MaterialApp(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        navigatorObservers: [
+          if (!kDebugMode) FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+        ],
+        home: const SplashScreen(),
+        routes: {
+          '/home': (context) => const MainNavigation(),
+          '/splash': (context) => const SplashScreen(),
+        },
+        builder: (context, child) {
+          // Handle responsive design
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(
+                MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+              ),
+            ),
+            child: child!,
+          );
+        },
+        onGenerateRoute: (settings) {
+          // Handle deep linking for web
+          switch (settings.name) {
+            case '/':
+              return MaterialPageRoute(builder: (_) => const SplashScreen());
+            case '/channels':
+              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 0));
+            case '/scanner':
+              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 1));
+            case '/ai-chat':
+              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 2));
+            case '/profile':
+              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 3));
+            default:
+              return MaterialPageRoute(builder: (_) => const MainNavigation());
+          }
+        },
       ),
-      home: const SplashScreen(),
-      routes: {
-        '/main': (context) => const MainNavigation(),
-        '/channels': (context) => const ChannelDashboard(),
-        '/scanner': (context) => const ReceiptScannerScreen(),
-        '/chat': (context) => const AIChatScreen(),
-        '/profile': (context) => const ProfileScreen(),
-      },
     );
   }
 }
@@ -71,7 +148,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/main');
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     });
   }
@@ -159,7 +236,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 }
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final int? initialIndex;
+
+  const MainNavigation({super.key, this.initialIndex});
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -174,6 +253,14 @@ class _MainNavigationState extends State<MainNavigation> {
     const AIChatScreen(),
     const ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialIndex != null) {
+      _selectedIndex = widget.initialIndex!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

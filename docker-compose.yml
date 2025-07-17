@@ -4,14 +4,15 @@ services:
   betwizz-web:
     build:
       context: .
-      dockerfile: Dockerfile.web
+      dockerfile: Dockerfile
+      target: production-stage
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
-      - NGINX_HOST=localhost
-      - NGINX_PORT=80
+      - NODE_ENV=production
+      - FLUTTER_WEB=true
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs:/var/log/nginx
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
@@ -20,16 +21,25 @@ services:
       retries: 3
       start_period: 40s
 
-  # Optional: Add a reverse proxy for HTTPS
-  nginx-proxy:
-    image: nginx:alpine
+  # Development service
+  betwizz-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build-stage
     ports:
-      - "443:443"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - FLUTTER_WEB=true
     volumes:
-      - ./ssl:/etc/nginx/ssl:ro
-      - ./proxy.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - betwizz-web
-    restart: unless-stopped
+      - .:/app
+      - /app/node_modules
+      - /app/.dart_tool
+    command: flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0
     profiles:
-      - production
+      - dev
+
+networks:
+  default:
+    name: betwizz-network

@@ -3,24 +3,45 @@
   "name": "betwizz-flutter-app",
   "builds": [
     {
-      "src": "build/web/**",
-      "use": "@vercel/static"
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
     }
   ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "build/web",
+  "installCommand": "npm install && flutter pub get",
+  "framework": null,
   "routes": [
     {
       "src": "/sitemap.xml",
-      "dest": "/sitemap.xml"
+      "dest": "/sitemap.xml",
+      "headers": {
+        "Content-Type": "application/xml"
+      }
     },
     {
       "src": "/robots.txt",
-      "dest": "/robots.txt"
+      "dest": "/robots.txt",
+      "headers": {
+        "Content-Type": "text/plain"
+      }
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json",
+      "headers": {
+        "Content-Type": "application/json"
+      }
     },
     {
       "src": "/assets/(.*)",
       "dest": "/assets/$1",
       "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*"
       }
     },
     {
@@ -38,17 +59,27 @@
       }
     },
     {
-      "src": "/(.*\\.(js|css|html|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|map))",
+      "src": "/(.*\\.(js|css|html|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|map|wasm))",
       "dest": "/$1",
       "headers": {
-        "Cache-Control": "public, max-age=86400"
+        "Cache-Control": "public, max-age=86400",
+        "Access-Control-Allow-Origin": "*"
       }
     },
     {
       "src": "/flutter_service_worker.js",
       "dest": "/flutter_service_worker.js",
       "headers": {
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/javascript"
+      }
+    },
+    {
+      "src": "/flutter_bootstrap.js",
+      "dest": "/flutter_bootstrap.js",
+      "headers": {
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/javascript"
       }
     },
     {
@@ -56,11 +87,6 @@
       "dest": "/index.html"
     }
   ],
-  "functions": {
-    "build/web/index.html": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
@@ -80,23 +106,22 @@
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
+        },
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
         }
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+  "functions": {
+    "build/web/**": {
+      "maxDuration": 30
     }
-  ]
+  },
+  "regions": ["cpt1"],
+  "env": {
+    "FLUTTER_WEB": "true",
+    "NODE_ENV": "production"
+  }
 }
