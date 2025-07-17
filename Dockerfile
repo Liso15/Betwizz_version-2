@@ -1,47 +1,34 @@
 # Use the official Flutter image as base
-FROM cirrusci/flutter:stable AS build-stage
+FROM cirrusci/flutter:stable
 
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
+# Copy pubspec files
 COPY pubspec.yaml pubspec.lock ./
-COPY package.json package-lock.json* ./
 
-# Install Node.js dependencies
-RUN apt-get update && apt-get install -y nodejs npm
-RUN npm install
-
-# Install Flutter dependencies
+# Install dependencies
 RUN flutter pub get
 
-# Copy source code
+# Copy the entire project
 COPY . .
 
 # Enable web support
 RUN flutter config --enable-web
 
-# Build the application
-RUN flutter build web --release --web-renderer html --base-href /
+# Build the web app
+RUN flutter build web --release --web-renderer html
 
-# Optimize assets
-RUN npm run optimize:assets || true
-RUN npm run generate:sitemap || true
+# Use nginx to serve the web app
+FROM nginx:alpine
 
-# Production stage
-FROM nginx:alpine AS production-stage
-
-# Copy built application
-COPY --from=build-stage /app/build/web /usr/share/nginx/html
+# Copy the built web app to nginx
+COPY --from=0 /app/build/web /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/ || exit 1
-
-# Expose port
+# Expose port 80
 EXPOSE 80
 
 # Start nginx

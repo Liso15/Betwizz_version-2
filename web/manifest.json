@@ -1,7 +1,7 @@
 {
   "name": "Betwizz - Sports Betting Intelligence",
   "short_name": "Betwizz",
-  "description": "Transform your sports betting experience with AI-powered predictions and live sports channels in South Africa.",
+  "description": "Advanced sports betting intelligence platform for South Africa with AI-powered predictions and live analysis",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#2E7D32",
@@ -13,42 +13,44 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/icons/Icon-192.png",
+      "src": "icons/Icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
-      "src": "/icons/Icon-512.png",
+      "src": "icons/Icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
-      "src": "/icons/Icon-maskable-192.png",
+      "src": "icons/Icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icons/Icon-maskable-512.png",
+      "src": "icons/Icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "/assets/images/screenshot-mobile.png",
-      "sizes": "390x844",
+      "src": "screenshots/desktop-home.png",
+      "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "wide",
+      "label": "Betwizz Home Screen"
     },
     {
-      "src": "/assets/images/screenshot-desktop.png",
-      "sizes": "1920x1080",
+      "src": "screenshots/mobile-channels.png",
+      "sizes": "390x844",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "narrow",
+      "label": "Live Channels View"
     }
   ],
   "shortcuts": [
@@ -59,32 +61,35 @@
       "url": "/channels",
       "icons": [
         {
-          "src": "/icons/shortcut-channels.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "AI Chat",
-      "short_name": "Mfethu AI",
-      "description": "Chat with Mfethu AI for betting insights",
-      "url": "/ai-chat",
-      "icons": [
-        {
-          "src": "/icons/shortcut-ai.png",
-          "sizes": "96x96"
+          "src": "icons/shortcut-channels.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
     {
       "name": "Receipt Scanner",
       "short_name": "Scanner",
-      "description": "Scan betting receipts",
+      "description": "Scan betting receipts with AI",
       "url": "/scanner",
       "icons": [
         {
-          "src": "/icons/shortcut-scanner.png",
-          "sizes": "96x96"
+          "src": "icons/shortcut-scanner.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mfethu AI",
+      "short_name": "AI Chat",
+      "description": "Chat with AI betting assistant",
+      "url": "/ai-chat",
+      "icons": [
+        {
+          "src": "icons/shortcut-ai.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }

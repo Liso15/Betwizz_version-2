@@ -3,78 +3,83 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+// Core imports
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
+
+// Provider imports
 import 'providers/channel_provider.dart';
 import 'providers/ai_chat_provider.dart';
 import 'providers/receipt_provider.dart';
+
+// Screen imports
 import 'screens/splash_screen.dart';
 import 'screens/main_navigation.dart';
+
+// Firebase configuration
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Firebase for web
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "your-api-key",
-        authDomain: "betwizz-app.firebaseapp.com",
-        projectId: "betwizz-app",
-        storageBucket: "betwizz-app.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef123456",
-        measurementId: "G-XXXXXXXXXX",
+  try {
+    // Initialize Firebase
+    if (kIsWeb) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+    
+    // Load environment variables
+    await dotenv.load(fileName: ".env");
+    
+    // Initialize Hive for local storage
+    await Hive.initFlutter();
+    
+    // Initialize SharedPreferences
+    await SharedPreferences.getInstance();
+    
+    // Set preferred orientations for mobile
+    if (!kIsWeb) {
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
+    
+    // Set system UI overlay style
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
-  } else {
-    await Firebase.initializeApp();
-  }
-
-  // Configure Crashlytics
-  if (!kDebugMode) {
-    FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    };
     
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
+    runApp(const BetwizzApp());
+  } catch (e) {
+    // Handle initialization errors
+    debugPrint('Initialization error: $e');
+    runApp(const BetwizzErrorApp());
   }
-
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  // Set system UI overlay style
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.black,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
-
-  runApp(const ProviderScope(child: BetwizzApp()));
 }
 
-class BetwizzApp extends ConsumerWidget {
+class BetwizzApp extends StatelessWidget {
   const BetwizzApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ChannelProvider()),
-        ChangeNotifierProvider(create: (_) => AIChatProvider()),
+        ChangeNotifierProvider(create: (_) => AiChatProvider()),
         ChangeNotifierProvider(create: (_) => ReceiptProvider()),
       ],
       child: MaterialApp(
@@ -83,42 +88,75 @@ class BetwizzApp extends ConsumerWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        navigatorObservers: [
-          if (!kDebugMode) FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-        ],
         home: const SplashScreen(),
         routes: {
           '/home': (context) => const MainNavigation(),
           '/splash': (context) => const SplashScreen(),
         },
         builder: (context, child) {
-          // Handle responsive design
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(
-                MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
-              ),
-            ),
-            child: child!,
+          // Handle responsive design for web
+          if (kIsWeb) {
+            return Container(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: child,
+            );
+          }
+          return child!;
+        },
+        // Error handling
+        onGenerateRoute: (settings) {
+          return MaterialPageRoute(
+            builder: (context) => const MainNavigation(),
           );
         },
-        onGenerateRoute: (settings) {
-          // Handle deep linking for web
-          switch (settings.name) {
-            case '/':
-              return MaterialPageRoute(builder: (_) => const SplashScreen());
-            case '/channels':
-              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 0));
-            case '/scanner':
-              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 1));
-            case '/ai-chat':
-              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 2));
-            case '/profile':
-              return MaterialPageRoute(builder: (_) => const MainNavigation(initialIndex: 3));
-            default:
-              return MaterialPageRoute(builder: (_) => const MainNavigation());
-          }
-        },
+      ),
+    );
+  }
+}
+
+class BetwizzErrorApp extends StatelessWidget {
+  const BetwizzErrorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Betwizz - Error',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Failed to initialize Betwizz',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Please check your internet connection and try again.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  // Restart the app
+                  SystemNavigator.pop();
+                },
+                child: const Text('Restart App'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -236,9 +274,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 }
 
 class MainNavigation extends StatefulWidget {
-  final int? initialIndex;
-
-  const MainNavigation({super.key, this.initialIndex});
+  const MainNavigation({super.key});
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -253,14 +289,6 @@ class _MainNavigationState extends State<MainNavigation> {
     const AIChatScreen(),
     const ProfileScreen(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialIndex != null) {
-      _selectedIndex = widget.initialIndex!;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
