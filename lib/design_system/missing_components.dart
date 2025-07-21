@@ -1,4 +1,12 @@
+import 'package:flutter/material.dart';
+
 // MISSING: Complete design system components
+
+class LoadingType {}
+
+class ErrorType {}
+
+class EmptyStateType {}
 
 class BetwizzDesignSystem {
   // ❌ Missing detailed component specifications

@@ -4,12 +4,12 @@ import 'live_indicator.dart';
 
 class ChannelCard extends StatelessWidget {
   final Channel channel;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const ChannelCard({
     super.key,
     required this.channel,
-    required this.onTap,
+    this.onTap,
   });
 
   @override
@@ -34,7 +34,9 @@ class ChannelCard extends StatelessWidget {
                     image: DecorationImage(
                       image: NetworkImage(channel.thumbnailUrl),
                       fit: BoxFit.cover,
-                      onError: (exception, stackTrace) {},
+                      onError: (exception, stackTrace) {
+                        // TODO: Handle image load error gracefully
+                      },
                     ),
                     color: Colors.grey[300],
                   ),

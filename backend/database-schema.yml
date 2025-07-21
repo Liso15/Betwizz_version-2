@@ -1,43 +1,117 @@
-# MISSING: Complete database schema
-database_schema:
-  users:
-    id: UUID PRIMARY KEY
-    email: VARCHAR(255) UNIQUE NOT NULL
-    password_hash: VARCHAR(255) NOT NULL
-    fica_verified: BOOLEAN DEFAULT FALSE
-    created_at: TIMESTAMP
-    updated_at: TIMESTAMP
-    
-  channels:
-    id: UUID PRIMARY KEY
-    creator_id: UUID REFERENCES users(id)
-    name: VARCHAR(255) NOT NULL
-    description: TEXT
-    subscription_tier: ENUM('free', 'basic', 'premium', 'elite')
-    price: DECIMAL(10,2)
-    is_live: BOOLEAN DEFAULT FALSE
-    viewer_count: INTEGER DEFAULT 0
-    created_at: TIMESTAMP
-    
-  subscriptions:
-    id: UUID PRIMARY KEY
-    user_id: UUID REFERENCES users(id)
-    channel_id: UUID REFERENCES channels(id)
-    tier: ENUM('basic', 'premium', 'elite')
-    status: ENUM('active', 'cancelled', 'expired')
-    payfast_subscription_id: VARCHAR(255)
-    expires_at: TIMESTAMP
-    created_at: TIMESTAMP
-    
-  bet_receipts:
-    id: UUID PRIMARY KEY
-    user_id: UUID REFERENCES users(id)
-    bookmaker: VARCHAR(100)
-    bet_type: VARCHAR(100)
-    stake_amount: DECIMAL(10,2)
-    odds: DECIMAL(8,2)
-    is_win: BOOLEAN
-    win_amount: DECIMAL(10,2)
-    receipt_image_url: VARCHAR(500)
-    ocr_data: JSONB
-    created_at: TIMESTAMP
+# Detailed database schema for Betwizz
+
+tables:
+  - name: users
+    columns:
+      - name: id
+        type: UUID
+        primary_key: true
+        default: uuid_generate_v4()
+      - name: email
+        type: VARCHAR(255)
+        unique: true
+        nullable: false
+      - name: password_hash
+        type: VARCHAR(255)
+        nullable: false
+      - name: fica_verified
+        type: BOOLEAN
+        default: false
+      - name: created_at
+        type: TIMESTAMP
+        default: now()
+      - name: updated_at
+        type: TIMESTAMP
+        default: now()
+
+  - name: channels
+    columns:
+      - name: id
+        type: UUID
+        primary_key: true
+        default: uuid_generate_v4()
+      - name: creator_id
+        type: UUID
+        foreign_key:
+          table: users
+          column: id
+      - name: name
+        type: VARCHAR(255)
+        nullable: false
+      - name: description
+        type: TEXT
+      - name: subscription_tier
+        type: VARCHAR(50) # using VARCHAR instead of ENUM for flexibility
+        check: "subscription_tier IN ('free', 'basic', 'premium', 'elite')"
+      - name: price
+        type: DECIMAL(10, 2)
+      - name: is_live
+        type: BOOLEAN
+        default: false
+      - name: viewer_count
+        type: INTEGER
+        default: 0
+      - name: created_at
+        type: TIMESTAMP
+        default: now()
+
+  - name: subscriptions
+    columns:
+      - name: id
+        type: UUID
+        primary_key: true
+        default: uuid_generate_v4()
+      - name: user_id
+        type: UUID
+        foreign_key:
+          table: users
+          column: id
+      - name: channel_id
+        type: UUID
+        foreign_key:
+          table: channels
+          column: id
+      - name: tier
+        type: VARCHAR(50)
+        check: "tier IN ('basic', 'premium', 'elite')"
+      - name: status
+        type: VARCHAR(50)
+        check: "status IN ('active', 'cancelled', 'expired')"
+      - name: payfast_subscription_id
+        type: VARCHAR(255)
+      - name: expires_at
+        type: TIMESTAMP
+      - name: created_at
+        type: TIMESTAMP
+        default: now()
+
+  - name: bet_receipts
+    columns:
+      - name: id
+        type: UUID
+        primary_key: true
+        default: uuid_generate_v4()
+      - name: user_id
+        type: UUID
+        foreign_key:
+          table: users
+          column: id
+      - name: bookmaker
+        type: VARCHAR(100)
+      - name: bet_type
+        type: VARCHAR(100)
+      - name: stake_amount
+        type: DECIMAL(10, 2)
+      - name: odds
+        type: DECIMAL(8, 2)
+      - name: is_win
+        type: BOOLEAN
+      - name: win_amount
+        type: DECIMAL(10, 2)
+      - name: receipt_image_url
+        type: VARCHAR(500)
+      - name: ocr_data
+        type: JSONB
+      - name: created_at
+        type: TIMESTAMP
+        default: now()

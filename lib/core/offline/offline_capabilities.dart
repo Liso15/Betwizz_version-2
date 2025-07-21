@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 // MISSING: Comprehensive offline functionality
 
 class OfflineCapabilities {
