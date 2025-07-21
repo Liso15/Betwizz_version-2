@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 // MISSING: Comprehensive SA localization
 
 class SALocalization {

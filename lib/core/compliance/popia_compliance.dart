@@ -1,5 +1,9 @@
 // MISSING: POPIA compliance implementation
 
+class UserData {}
+
+class DataRequest {}
+
 class POPIACompliance {
   // Data Consent Management
   static Future<void> requestDataConsent() async {

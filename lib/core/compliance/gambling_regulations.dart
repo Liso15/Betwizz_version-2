@@ -1,5 +1,9 @@
 // MISSING: Gambling regulation compliance
 
+class SpendingLimits {}
+
+class UserBehavior {}
+
 class GamblingRegulations {
   // Age Verification
   static Future<bool> verifyAge(String idNumber) async {

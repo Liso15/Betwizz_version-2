@@ -1,4 +1,10 @@
+import 'package:flutter/material.dart';
+
 // MISSING: Device compatibility implementations
+
+class DeviceCapabilities {}
+
+class DevicePerformance {}
 
 class DeviceCompatibility {
   // Screen Adaptation
