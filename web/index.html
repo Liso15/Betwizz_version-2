@@ -1,25 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
+    The value below is injected by flutter build, do not touch.
   -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Betwizz - Sports Betting Intelligence Platform for South Africa. Get AI-powered predictions, live channels, and smart betting insights.">
-  <meta name="keywords" content="sports betting, south africa, ai predictions, live channels, betting tips, soccer, rugby, cricket">
+  <meta name="description" content="Betwizz - Your smart betting companion with AI chat, receipt scanning, and channel management.">
+  <meta name="keywords" content="betting, sports, AI, chat, receipt scanner, channels">
   <meta name="author" content="Betwizz Team">
 
   <!-- iOS meta tags & icons -->
@@ -31,80 +21,93 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <!-- Open Graph meta tags -->
-  <meta property="og:title" content="Betwizz - Sports Betting Intelligence">
-  <meta property="og:description" content="AI-powered sports betting platform for South Africa">
-  <meta property="og:image" content="icons/Icon-512.png">
-  <meta property="og:url" content="https://betwizz.vercel.app">
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://betwizz.vercel.app/">
+  <meta property="og:title" content="Betwizz - Smart Betting Companion">
+  <meta property="og:description" content="Your smart betting companion with AI chat, receipt scanning, and channel management.">
+  <meta property="og:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
 
-  <!-- Twitter Card meta tags -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Betwizz - Sports Betting Intelligence">
-  <meta name="twitter:description" content="AI-powered sports betting platform for South Africa">
-  <meta name="twitter:image" content="icons/Icon-512.png">
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://betwizz.vercel.app/">
+  <meta property="twitter:title" content="Betwizz - Smart Betting Companion">
+  <meta property="twitter:description" content="Your smart betting companion with AI chat, receipt scanning, and channel management.">
+  <meta property="twitter:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
 
-  <!-- Viewport -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>Betwizz - Sports Betting Intelligence Platform</title>
+  <title>Betwizz</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Preload critical resources -->
-  <link rel="preload" href="assets/fonts/Roboto-Regular.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" href="assets/images/betwizz_logo.png" as="image">
-
-  <!-- Critical CSS -->
   <style>
     body {
       margin: 0;
       padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       font-family: 'Roboto', sans-serif;
-      background-color: #ffffff;
       overflow: hidden;
     }
     
-    #loading {
+    .loading-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       z-index: 9999;
     }
     
-    .loading-logo {
-      width: 120px;
-      height: 120px;
-      margin-bottom: 30px;
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       animation: pulse 2s infinite;
     }
     
-    .loading-text {
+    .logo::before {
+      content: '⚽';
+      font-size: 40px;
+    }
+    
+    .app-name {
       color: white;
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .app-tagline {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      margin-bottom: 32px;
       text-align: center;
     }
     
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
     
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.8; }
+    .loading-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      margin-top: 16px;
     }
     
     @keyframes spin {
@@ -112,133 +115,46 @@
       100% { transform: rotate(360deg); }
     }
     
-    .error-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #f8f9fa;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
     
-    .error-icon {
-      font-size: 64px;
-      color: #dc3545;
-      margin-bottom: 20px;
-    }
-    
-    .error-title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #343a40;
-      margin-bottom: 10px;
-    }
-    
-    .error-message {
-      font-size: 16px;
-      color: #6c757d;
-      margin-bottom: 30px;
-      max-width: 400px;
-    }
-    
-    .retry-button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    .retry-button:hover {
-      background: #0056b3;
+    /* Hide loading screen when Flutter loads */
+    .flutter-loaded .loading-container {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
   <!-- Loading Screen -->
-  <div id="loading">
-    <img src="icons/Icon-192.png" alt="Betwizz Logo" class="loading-logo">
-    <div class="loading-text">Betwizz</div>
-    <div class="loading-spinner"></div>
+  <div class="loading-container" id="loading">
+    <div class="logo"></div>
+    <div class="app-name">Betwizz</div>
+    <div class="app-tagline">Smart Betting Companion</div>
+    <div class="spinner"></div>
+    <div class="loading-text">Loading your betting experience...</div>
   </div>
-
-  <!-- Error Screen -->
-  <div id="error" class="error-container">
-    <div class="error-icon">⚠️</div>
-    <div class="error-title">Failed to Load</div>
-    <div class="error-message">
-      There was a problem loading Betwizz. Please check your internet connection and try again.
-    </div>
-    <button class="retry-button" onclick="window.location.reload()">
-      Retry
-    </button>
-  </div>
-
-  <!-- Flutter App Container -->
-  <div id="app"></div>
 
   <script>
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('flutter-first-frame', function () {
-        navigator.serviceWorker.register('flutter_service_worker.js?v=' + Date.now());
-      });
-    }
-
-    // Error Handling
-    window.addEventListener('error', function(e) {
-      console.error('Application error:', e.error);
-      showError();
-    });
-
-    window.addEventListener('unhandledrejection', function(e) {
-      console.error('Unhandled promise rejection:', e.reason);
-      showError();
-    });
-
-    function showError() {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('error').style.display = 'flex';
-    }
-
-    function hideLoading() {
-      document.getElementById('loading').style.display = 'none';
-    }
-
-    // Hide loading screen after Flutter loads
     window.addEventListener('flutter-first-frame', function () {
-      setTimeout(hideLoading, 500);
+      document.body.classList.add('flutter-loaded');
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.style.display = 'none';
+        }
+      }, 500);
     });
-
-    // Fallback: Hide loading screen after 10 seconds
-    setTimeout(function() {
-      if (document.getElementById('loading').style.display !== 'none') {
-        hideLoading();
-      }
-    }, 10000);
-
-    // Performance monitoring
-    if ('performance' in window) {
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          const perfData = performance.getEntriesByType('navigation')[0];
-          console.log('Page load time:', perfData.loadEventEnd - perfData.fetchStart, 'ms');
-        }, 0);
-      });
-    }
   </script>
 
-  <!-- Flutter Web Bootstrap -->
-  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = null;
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
 </body>
 </html>

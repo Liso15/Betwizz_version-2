@@ -1,54 +1,33 @@
 {
-  "name": "betwizz-flutter-web",
+  "name": "betwizz-web",
   "version": "1.0.0",
-  "description": "Betwizz Flutter Web Application - Sports Betting Intelligence Platform",
-  "main": "index.js",
+  "description": "Betwizz Flutter Web Build Scripts",
   "scripts": {
-    "build": "flutter build web --release --web-renderer html --base-href / --dart-define=FLUTTER_WEB_USE_SKIA=false",
-    "build:prod": "flutter build web --release --web-renderer html --base-href / --dart-define=FLUTTER_WEB_USE_SKIA=false --dart-define=FLUTTER_WEB_AUTO_DETECT=false --source-maps",
-    "build:dev": "flutter build web --debug --web-renderer html --base-href / --source-maps",
-    "build:profile": "flutter build web --profile --web-renderer html --base-href / --source-maps",
-    "build:analyze": "flutter build web --release --analyze-size --web-renderer html",
-    "prebuild": "flutter clean && flutter pub get && flutter config --enable-web",
-    "postbuild": "npm run optimize:assets && npm run generate:sitemap",
+    "clean": "flutter clean && flutter pub get",
+    "build": "flutter build web --release --web-renderer html --base-href /",
+    "build:analyze": "flutter build web --release --analyze-size",
     "optimize:assets": "node scripts/optimize-assets.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
-    "deploy": "./scripts/deploy.sh",
-    "deploy:prod": "./scripts/deploy.sh --production",
-    "deploy:preview": "./scripts/deploy.sh",
+    "verify:build": "node scripts/verify-build.js",
+    "deploy": "npm run clean && npm run build && npm run optimize:assets && npm run verify:build",
+    "serve": "cd build/web && python -m http.server 8080",
+    "lighthouse": "lighthouse http://localhost:8080 --output=json --output-path=./lighthouse-report.json",
     "test": "flutter test",
-    "test:web": "flutter test --platform chrome",
-    "analyze": "flutter analyze --fatal-infos",
-    "clean": "flutter clean && rm -rf build/ && rm -rf .dart_tool/",
-    "dev": "flutter run -d web-server --web-port 3000 --web-hostname 0.0.0.0",
-    "serve": "cd build/web && python3 -m http.server 8000",
-    "serve:prod": "cd build/web && npx http-server -p 8000 -c-1 --gzip",
-    "install:deps": "flutter pub get && npm install",
-    "setup": "flutter pub get && flutter config --enable-web && npm install",
-    "lint": "flutter analyze && dart format --set-exit-if-changed .",
-    "format": "dart format .",
-    "doctor": "flutter doctor -v",
-    "upgrade": "flutter upgrade && flutter pub upgrade"
+    "analyze": "flutter analyze"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/betwizz-flutter-app.git"
-  },
-  "keywords": ["flutter", "web", "sports-betting", "south-africa", "ai", "predictions", "vercel", "pwa"],
-  "author": "Betwizz Team",
-  "license": "MIT",
   "devDependencies": {
-    "vercel": "^33.0.1",
-    "http-server": "^14.1.1",
+    "sharp": "^0.32.6",
     "imagemin": "^8.0.1",
     "imagemin-pngquant": "^9.0.2",
     "imagemin-mozjpeg": "^10.0.0",
-    "sitemap": "^7.1.1"
+    "glob": "^10.3.10",
+    "fs-extra": "^11.1.1",
+    "lighthouse": "^11.4.0"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0",
-    "flutter": ">=3.24.0"
+    "node": ">=18.0.0"
   },
-  "browserslist": ["> 1%", "last 2 versions", "not dead", "not ie <= 11"]
+  "keywords": ["flutter", "web", "betting", "sports", "ai", "chat"],
+  "author": "Betwizz Team",
+  "license": "MIT"
 }

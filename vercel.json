@@ -1,10 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "name": "betwizz-flutter-app",
-  "buildCommand": "npm run build",
-  "outputDirectory": "build/web",
-  "installCommand": "flutter pub get && npm install",
-  "framework": null,
   "builds": [
     {
       "src": "package.json",
@@ -14,48 +10,41 @@
       }
     }
   ],
+  "buildCommand": "npm run deploy",
+  "outputDirectory": "build/web",
+  "installCommand": "apt-get update && apt-get install -y curl git unzip && git clone https://github.com/flutter/flutter.git /opt/flutter && export PATH=\"/opt/flutter/bin:$PATH\" && flutter doctor && flutter config --enable-web && flutter pub get",
+  "framework": null,
+  "functions": {},
   "routes": [
     {
-      "src": "/sitemap.xml",
-      "dest": "/sitemap.xml"
+      "src": "/flutter_service_worker.js",
+      "headers": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
     },
     {
-      "src": "/robots.txt",
-      "dest": "/robots.txt"
+      "src": "/manifest.json",
+      "headers": {
+        "Cache-Control": "public, max-age=86400",
+        "content-type": "application/json"
+      }
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
       "src": "/icons/(.*)",
-      "dest": "/icons/$1",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
-      "src": "/canvaskit/(.*)",
-      "dest": "/canvaskit/$1",
+      "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/(.*\\.(js|css|html|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|map))",
-      "dest": "/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=86400"
-      }
-    },
-    {
-      "src": "/flutter_service_worker.js",
-      "dest": "/flutter_service_worker.js",
-      "headers": {
-        "Cache-Control": "no-cache"
       }
     },
     {
@@ -63,11 +52,6 @@
       "dest": "/index.html"
     }
   ],
-  "functions": {
-    "build/web/index.html": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
@@ -83,31 +67,8 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
-    }
-  ],
-  "env": {
-    "FLUTTER_WEB": "true",
-    "FLUTTER_BUILD_MODE": "release"
-  }
+  ]
 }

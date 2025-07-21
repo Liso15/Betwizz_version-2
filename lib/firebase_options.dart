@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-Web-Key-Replace-With-Actual',
-    appId: '1:123456789:web:demo-app-id',
+    apiKey: 'AIzaSyDemo-WebApiKey-ForDevelopment',
+    appId: '1:123456789:web:abcdef123456',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
     authDomain: 'betwizz-demo.firebaseapp.com',
     storageBucket: 'betwizz-demo.appspot.com',
-    measurementId: 'G-DEMO123456',
+    measurementId: 'G-XXXXXXXXXX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-Android-Key-Replace-With-Actual',
-    appId: '1:123456789:android:demo-app-id',
+    apiKey: 'AIzaSyDemo-AndroidApiKey-ForDevelopment',
+    appId: '1:123456789:android:abcdef123456',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
     storageBucket: 'betwizz-demo.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-iOS-Key-Replace-With-Actual',
-    appId: '1:123456789:ios:demo-app-id',
+    apiKey: 'AIzaSyDemo-iOSApiKey-ForDevelopment',
+    appId: '1:123456789:ios:abcdef123456',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
     storageBucket: 'betwizz-demo.appspot.com',
-    iosBundleId: 'com.example.betwizz',
+    iosBundleId: 'com.betwizz.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-macOS-Key-Replace-With-Actual',
-    appId: '1:123456789:ios:demo-app-id',
+    apiKey: 'AIzaSyDemo-macOSApiKey-ForDevelopment',
+    appId: '1:123456789:macos:abcdef123456',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
     storageBucket: 'betwizz-demo.appspot.com',
-    iosBundleId: 'com.example.betwizz',
+    iosBundleId: 'com.betwizz.app',
   );
 }
