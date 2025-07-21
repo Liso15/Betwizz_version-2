@@ -1,65 +1,62 @@
-const fs = require("fs-extra")
+const fs = require("fs")
 const path = require("path")
 
-async function verifyBuild() {
-  console.log("🔍 Verifying Flutter web build...")
+const buildDir = path.join(__dirname, "..", "build", "web")
+const requiredFiles = ["index.html", "main.dart.js", "flutter_service_worker.js", "manifest.json"]
 
-  const buildDir = path.join(process.cwd(), "build", "web")
-  const requiredFiles = ["index.html", "main.dart.js", "flutter_service_worker.js", "manifest.json"]
+console.log("🔍 Verifying Flutter web build...")
 
-  let allFilesExist = true
+// Check if build directory exists
+if (!fs.existsSync(buildDir)) {
+  console.error("❌ Build directory not found:", buildDir)
+  process.exit(1)
+}
 
-  // Check if build directory exists
-  if (!(await fs.pathExists(buildDir))) {
-    console.error("❌ Build directory does not exist")
-    process.exit(1)
-  }
-
-  // Check required files
-  for (const file of requiredFiles) {
-    const filePath = path.join(buildDir, file)
-    if (!(await fs.pathExists(filePath))) {
-      console.error(`❌ Required file missing: ${file}`)
-      allFilesExist = false
-    } else {
-      console.log(`✅ Found: ${file}`)
-    }
-  }
-
-  // Check assets directory
-  const assetsDir = path.join(buildDir, "assets")
-  if (!(await fs.pathExists(assetsDir))) {
-    console.error("❌ Assets directory missing")
+// Check required files
+let allFilesExist = true
+requiredFiles.forEach((file) => {
+  const filePath = path.join(buildDir, file)
+  if (fs.existsSync(filePath)) {
+    const stats = fs.statSync(filePath)
+    console.log(`✅ ${file} (${(stats.size / 1024).toFixed(2)} KB)`)
+  } else {
+    console.error(`❌ Missing required file: ${file}`)
     allFilesExist = false
+  }
+})
+
+// Check assets directory
+const assetsDir = path.join(buildDir, "assets")
+if (fs.existsSync(assetsDir)) {
+  const assetFiles = fs.readdirSync(assetsDir, { recursive: true })
+  console.log(`✅ Assets directory (${assetFiles.length} files)`)
+} else {
+  console.error("❌ Assets directory not found")
+  allFilesExist = false
+}
+
+// Verify index.html content
+const indexPath = path.join(buildDir, "index.html")
+if (fs.existsSync(indexPath)) {
+  const indexContent = fs.readFileSync(indexPath, "utf8")
+  if (indexContent.includes("<title>Betwizz</title>")) {
+    console.log("✅ Index.html has correct title")
   } else {
-    console.log("✅ Assets directory exists")
+    console.warn("⚠️ Index.html title may need updating")
   }
 
-  // Check index.html content
-  const indexPath = path.join(buildDir, "index.html")
-  if (await fs.pathExists(indexPath)) {
-    const indexContent = await fs.readFile(indexPath, "utf8")
-    if (indexContent.includes("<title>Betwizz</title>")) {
-      console.log("✅ Index.html has correct title")
-    } else {
-      console.warn("⚠️  Index.html title may be incorrect")
-    }
-  }
-
-  // Calculate build size
-  const stats = await fs.stat(buildDir)
-  console.log(`📊 Build directory size: ${(stats.size / 1024 / 1024).toFixed(2)} MB`)
-
-  if (allFilesExist) {
-    console.log("✅ Build verification successful!")
-    process.exit(0)
+  if (indexContent.includes("flutter")) {
+    console.log("✅ Index.html contains Flutter references")
   } else {
-    console.error("❌ Build verification failed!")
-    process.exit(1)
+    console.error("❌ Index.html missing Flutter references")
+    allFilesExist = false
   }
 }
 
-verifyBuild().catch((error) => {
-  console.error("❌ Verification error:", error)
+if (allFilesExist) {
+  console.log("🎉 Build verification successful!")
+  process.exit(0)
+} else {
+  console.error("💥 Build verification failed!")
   process.exit(1)
-})
+}

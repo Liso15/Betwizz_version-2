@@ -1,0 +1,144 @@
+# Mobile Build Configuration for Betwizz Flutter App
+# This file defines mobile-specific build settings and optimizations
+
+mobile_config:
+  app_name: "Betwizz"
+  bundle_id: "com.betwizz.app"
+  version: "1.0.0"
+  build_number: 1
+
+android:
+  min_sdk_version: 21  # Android 5.0
+  target_sdk_version: 34  # Android 14
+  compile_sdk_version: 34
+  
+  build_types:
+    debug:
+      debuggable: true
+      minify_enabled: false
+      shrink_resources: false
+    release:
+      debuggable: false
+      minify_enabled: true
+      shrink_resources: true
+      proguard_files:
+        - "proguard-android-optimize.txt"
+        - "proguard-rules.pro"
+  
+  permissions:
+    - "android.permission.INTERNET"
+    - "android.permission.ACCESS_NETWORK_STATE"
+    - "android.permission.CAMERA"
+    - "android.permission.RECORD_AUDIO"
+    - "android.permission.READ_EXTERNAL_STORAGE"
+    - "android.permission.WRITE_EXTERNAL_STORAGE"
+    - "android.permission.RECEIVE_BOOT_COMPLETED"
+    - "android.permission.VIBRATE"
+    - "android.permission.WAKE_LOCK"
+    - "android.permission.USE_FINGERPRINT"
+    - "android.permission.USE_BIOMETRIC"
+  
+  features:
+    - name: "android.hardware.camera"
+      required: true
+    - name: "android.hardware.camera.autofocus"
+      required: false
+  
+  optimization:
+    enable_multidex: true
+    enable_proguard: true
+    enable_r8: true
+    split_apks: true
+
+ios:
+  min_version: "12.0"
+  target_version: "17.0"
+  
+  capabilities:
+    - "Camera"
+    - "Microphone"
+    - "Background Modes"
+    - "Push Notifications"
+    - "Associated Domains"
+  
+  background_modes:
+    - "background-fetch"
+    - "remote-notification"
+  
+  privacy_permissions:
+    camera: "Betwizz needs camera access to scan betting receipts and enable video streaming features."
+    microphone: "Betwizz needs microphone access for video calls and voice interactions with the AI assistant."
+    photo_library: "Betwizz needs photo library access to save and share betting receipts and screenshots."
+    location: "Betwizz uses location to provide region-specific betting information and comply with local regulations."
+  
+  optimization:
+    enable_bitcode: false
+    strip_debug_symbols: true
+    enable_app_thinning: true
+
+performance:
+  memory_limits:
+    android_min: "2GB"
+    android_recommended: "4GB"
+    ios_min: "2GB"
+    ios_recommended: "4GB"
+  
+  optimization_levels:
+    low_end:
+      disable_animations: true
+      reduce_image_quality: true
+      limit_cache_size: "25MB"
+      disable_background_sync: true
+    
+    medium:
+      reduce_animations: true
+      standard_image_quality: true
+      limit_cache_size: "50MB"
+      enable_background_sync: true
+    
+    high_end:
+      enable_all_animations: true
+      high_image_quality: true
+      limit_cache_size: "100MB"
+      enable_background_sync: true
+      enable_advanced_features: true
+
+testing:
+  unit_tests: true
+  integration_tests: true
+  performance_tests: true
+  
+  test_devices:
+    android:
+      - "Pixel 6"
+      - "Samsung Galaxy S21"
+      - "OnePlus 9"
+      - "Xiaomi Redmi Note 10"
+    
+    ios:
+      - "iPhone 12"
+      - "iPhone 13 Pro"
+      - "iPhone SE (3rd generation)"
+      - "iPad Air (5th generation)"
+
+deployment:
+  android:
+    store: "Google Play Store"
+    signing_config: "release"
+    app_bundle: true
+    
+  ios:
+    store: "Apple App Store"
+    provisioning_profile: "distribution"
+    archive_method: "app-store"
+
+monitoring:
+  crash_reporting: true
+  performance_monitoring: true
+  analytics: true
+  
+  tools:
+    - "Firebase Crashlytics"
+    - "Firebase Performance"
+    - "Firebase Analytics"
+    - "Sentry" # Optional alternative

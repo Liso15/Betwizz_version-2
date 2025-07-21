@@ -14,7 +14,6 @@
   "outputDirectory": "build/web",
   "installCommand": "apt-get update && apt-get install -y curl git unzip && git clone https://github.com/flutter/flutter.git /opt/flutter && export PATH=\"/opt/flutter/bin:$PATH\" && flutter doctor && flutter config --enable-web && flutter pub get",
   "framework": null,
-  "functions": {},
   "routes": [
     {
       "src": "/flutter_service_worker.js",

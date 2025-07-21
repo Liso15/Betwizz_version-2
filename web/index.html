@@ -8,9 +8,10 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Betwizz - Your smart betting companion with AI chat, receipt scanning, and channel management.">
-  <meta name="keywords" content="betting, sports, AI, chat, receipt scanner, channels">
+  <meta name="description" content="Betwizz - Smart betting assistant app for South African sports betting. Get AI-powered insights, live channels, and receipt scanning.">
+  <meta name="keywords" content="betting, sports, south africa, AI, assistant, channels, receipt scanner">
   <meta name="author" content="Betwizz Team">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,25 +25,30 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://betwizz.vercel.app/">
-  <meta property="og:title" content="Betwizz - Smart Betting Companion">
-  <meta property="og:description" content="Your smart betting companion with AI chat, receipt scanning, and channel management.">
+  <meta property="og:title" content="Betwizz - Smart Betting Assistant">
+  <meta property="og:description" content="AI-powered sports betting assistant for South African bettors">
   <meta property="og:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://betwizz.vercel.app/">
-  <meta property="twitter:title" content="Betwizz - Smart Betting Companion">
-  <meta property="twitter:description" content="Your smart betting companion with AI chat, receipt scanning, and channel management.">
+  <meta property="twitter:title" content="Betwizz - Smart Betting Assistant">
+  <meta property="twitter:description" content="AI-powered sports betting assistant for South African bettors">
   <meta property="twitter:image" content="https://betwizz.vercel.app/icons/Icon-512.png">
 
-  <title>Betwizz</title>
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#00C851">
+  <meta name="msapplication-navbutton-color" content="#00C851">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#00C851">
+
+  <title>Betwizz - Smart Betting Assistant</title>
   <link rel="manifest" href="manifest.json">
 
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #00C851 0%, #007E33 100%);
       font-family: 'Roboto', sans-serif;
       overflow: hidden;
     }
@@ -57,38 +63,36 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       z-index: 9999;
     }
     
     .logo {
       width: 80px;
       height: 80px;
-      background: rgba(255, 255, 255, 0.1);
+      background: white;
       border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 24px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      animation: pulse 2s infinite;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
     
-    .logo::before {
-      content: '⚽';
-      font-size: 40px;
+    .logo-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: #00C851;
     }
     
-    .app-name {
+    .app-title {
       color: white;
       font-size: 28px;
       font-weight: bold;
       margin-bottom: 8px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      text-align: center;
     }
     
-    .app-tagline {
+    .app-subtitle {
       color: rgba(255, 255, 255, 0.8);
       font-size: 16px;
       margin-bottom: 32px;
@@ -96,18 +100,12 @@
     }
     
     .spinner {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       border: 3px solid rgba(255, 255, 255, 0.3);
       border-top: 3px solid white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-    }
-    
-    .loading-text {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 14px;
-      margin-top: 16px;
     }
     
     @keyframes spin {
@@ -115,46 +113,103 @@
       100% { transform: rotate(360deg); }
     }
     
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    
-    /* Hide loading screen when Flutter loads */
-    .flutter-loaded .loading-container {
+    .fade-out {
       opacity: 0;
       transition: opacity 0.5s ease-out;
-      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <!-- Loading Screen -->
-  <div class="loading-container" id="loading">
-    <div class="logo"></div>
-    <div class="app-name">Betwizz</div>
-    <div class="app-tagline">Smart Betting Companion</div>
+  <div id="loading" class="loading-container">
+    <div class="logo">
+      <div class="logo-text">BW</div>
+    </div>
+    <div class="app-title">Betwizz</div>
+    <div class="app-subtitle">Smart Betting Assistant</div>
     <div class="spinner"></div>
-    <div class="loading-text">Loading your betting experience...</div>
   </div>
 
   <script>
     window.addEventListener('flutter-first-frame', function () {
-      document.body.classList.add('flutter-loaded');
+      const loading = document.getElementById('loading');
+      loading.classList.add('fade-out');
       setTimeout(() => {
-        const loading = document.getElementById('loading');
-        if (loading) {
-          loading.style.display = 'none';
-        }
+        loading.style.display = 'none';
       }, 500);
     });
+    
+    // Fallback: hide loading after 10 seconds
+    setTimeout(() => {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.style.display = 'none';
+      }
+    }, 10000);
   </script>
 
   <script>
-    // The value below is injected by flutter build, do not touch.
     var serviceWorkerVersion = null;
+    var scriptLoaded = false;
+    function loadMainDartJs() {
+      if (scriptLoaded) {
+        return;
+      }
+      scriptLoaded = true;
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'main.dart.js';
+      scriptTag.type = 'application/javascript';
+      document.body.append(scriptTag);
+    }
+
+    if ('serviceWorker' in navigator) {
+      // Service workers are supported. Use them.
+      window.addEventListener('load', function () {
+        // Wait for registration to finish before dropping the <script> tag.
+        // Otherwise, the browser will load the script multiple times,
+        // potentially different versions.
+        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+        navigator.serviceWorker.register(serviceWorkerUrl)
+          .then((reg) => {
+            function waitForActivation(serviceWorker) {
+              serviceWorker.addEventListener('statechange', () => {
+                if (serviceWorker.state == 'activated') {
+                  console.log('Installed new service worker.');
+                  loadMainDartJs();
+                }
+              });
+            }
+            if (!reg.active && (reg.installing || reg.waiting)) {
+              // No active web worker and we have installed or are installing
+              // one for the first time. Simply wait for it to activate.
+              waitForActivation(reg.installing || reg.waiting);
+            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+              // When the app updates the serviceWorkerVersion changes, so we
+              // need to ask the service worker to update.
+              console.log('New service worker available.');
+              reg.update();
+              waitForActivation(reg.installing);
+            } else {
+              // Existing service worker is still good.
+              console.log('Loading app from service worker.');
+              loadMainDartJs();
+            }
+          });
+
+        // If service worker doesn't succeed in a reasonable amount of time,
+        // fallback to plaint <script> tag.
+        setTimeout(() => {
+          if (!scriptLoaded) {
+            console.warn(
+              'Failed to load app from service worker. Falling back to plain <script> tag.',
+            );
+            loadMainDartJs();
+          }
+        }, 4000);
+      });
+    } else {
+      // Service workers not supported. Just drop the <script> tag.
+      loadMainDartJs();
+    }
   </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
 </body>
 </html>

@@ -44,7 +44,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-Web-Key-Replace-With-Actual',
+    apiKey: 'AIzaSyDemo-Web-Key-Replace-With-Real-Key',
     appId: '1:123456789:web:demo-app-id',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-Android-Key-Replace-With-Actual',
+    apiKey: 'AIzaSyDemo-Android-Key-Replace-With-Real-Key',
     appId: '1:123456789:android:demo-app-id',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-iOS-Key-Replace-With-Actual',
+    apiKey: 'AIzaSyDemo-iOS-Key-Replace-With-Real-Key',
     appId: '1:123456789:ios:demo-app-id',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',
@@ -71,7 +71,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDemo-macOS-Key-Replace-With-Actual',
+    apiKey: 'AIzaSyDemo-macOS-Key-Replace-With-Real-Key',
     appId: '1:123456789:ios:demo-app-id',
     messagingSenderId: '123456789',
     projectId: 'betwizz-demo',

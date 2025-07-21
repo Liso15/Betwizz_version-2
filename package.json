@@ -1,33 +1,28 @@
 {
-  "name": "betwizz-web",
+  "name": "betwizz-flutter-app",
   "version": "1.0.0",
-  "description": "Betwizz Flutter Web Build Scripts",
+  "description": "Betwizz Flutter Web Application",
+  "main": "index.js",
   "scripts": {
-    "clean": "flutter clean && flutter pub get",
-    "build": "flutter build web --release --web-renderer html --base-href /",
-    "build:analyze": "flutter build web --release --analyze-size",
-    "optimize:assets": "node scripts/optimize-assets.js",
-    "generate:sitemap": "node scripts/generate-sitemap.js",
-    "verify:build": "node scripts/verify-build.js",
-    "deploy": "npm run clean && npm run build && npm run optimize:assets && npm run verify:build",
-    "serve": "cd build/web && python -m http.server 8080",
-    "lighthouse": "lighthouse http://localhost:8080 --output=json --output-path=./lighthouse-report.json",
+    "deploy": "flutter clean && flutter pub get && flutter build web --release --web-renderer html && node scripts/optimize-assets.js && node scripts/verify-build.js && node scripts/generate-sitemap.js",
+    "build": "flutter build web --release --web-renderer html",
+    "serve": "flutter run -d web-server --web-port 3000",
+    "analyze": "flutter analyze",
     "test": "flutter test",
-    "analyze": "flutter analyze"
+    "clean": "flutter clean"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "devDependencies": {
     "sharp": "^0.32.6",
     "imagemin": "^8.0.1",
     "imagemin-pngquant": "^9.0.2",
     "imagemin-mozjpeg": "^10.0.0",
-    "glob": "^10.3.10",
     "fs-extra": "^11.1.1",
-    "lighthouse": "^11.4.0"
+    "glob": "^10.3.10"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "keywords": ["flutter", "web", "betting", "sports", "ai", "chat"],
+  "keywords": ["flutter", "web", "betting", "sports", "south-africa"],
   "author": "Betwizz Team",
   "license": "MIT"
 }

@@ -1,0 +1,36 @@
+# Flutter SDK Installation Configuration
+name: Flutter SDK Setup
+description: Automated Flutter SDK installation for CI/CD environments
+
+sdk:
+  version: "3.16.0"
+  channel: "stable"
+  installation_path: "/opt/flutter"
+  
+environment:
+  FLUTTER_ROOT: "/opt/flutter"
+  FLUTTER_HOME: "/opt/flutter"
+  PUB_CACHE: "/opt/flutter/.pub-cache"
+  
+web_config:
+  enabled: true
+  renderer: "html"
+  base_href: "/"
+  
+dependencies:
+  system_packages:
+    - curl
+    - git
+    - unzip
+    - xz-utils
+  
+verification:
+  commands:
+    - "flutter --version"
+    - "flutter doctor"
+    - "flutter config --list"
+    
+cache:
+  pub_cache: true
+  flutter_cache: true
+  duration: "7d"

@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>betwizz</string>
+	<string>Betwizz</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -28,6 +28,8 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	
+	<!-- Supported interface orientations -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -41,9 +43,70 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	
+	<!-- Performance optimizations -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Privacy permissions -->
+	<key>NSCameraUsageDescription</key>
+	<string>Betwizz needs camera access to scan betting receipts and enable video streaming features.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Betwizz needs microphone access for video calls and voice interactions with the AI assistant.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Betwizz needs photo library access to save and share betting receipts and screenshots.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Betwizz uses location to provide region-specific betting information and comply with local regulations.</string>
+	
+	<!-- Network security -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>firebase.googleapis.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<key>firebaseapp.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	
+	<!-- URL schemes for deep linking -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>betwizz.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>betwizz</string>
+				<string>https</string>
+			</array>
+		</dict>
+	</array>
+	
+	<!-- Background modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-fetch</string>
+		<string>remote-notification</string>
+	</array>
+	
+	<!-- Minimum iOS version -->
+	<key>MinimumOSVersion</key>
+	<string>12.0</string>
+	
+	<!-- App category -->
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.sports</string>
 </dict>
 </plist>
