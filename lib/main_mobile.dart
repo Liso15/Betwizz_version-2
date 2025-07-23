@@ -109,10 +109,11 @@ Future<void> _initializeHive() async {
   await Hive.openBox<ChatMessage>('chat_messages');
   await Hive.openBox<BetReceipt>('bet_receipts');
   
-  Hive.settings = HiveSettings(
-    compactionStrategy: (entries, deletedEntries) {
-      return deletedEntries > entries * 0.2;
-    },
+  await Hive.openBox<BetReceipt>(
+  'bet_receipts',
+   compactionStrategy: (entries, deletedEntries) {
+    return deletedEntries > entries * 0.2;
+  },
   );
 }
 

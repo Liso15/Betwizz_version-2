@@ -18,42 +18,51 @@ class ChatMessageAdapter extends TypeAdapter<ChatMessage> {
     };
     return ChatMessage(
       id: fields[0] as String,
-      userId: fields[1] as String,
-      userName: fields[2] as String,
-      userAvatar: fields[3] as String?,
-      message: fields[4] as String,
+      content: fields[1] as String,
+      senderId: fields[2] as String,
+      senderName: fields[3] as String,
+      senderAvatarUrl: fields[4] as String?,
       timestamp: fields[5] as DateTime,
-      type: fields[6] as MessageType,
-      channelId: fields[7] as String?,
-      isFromAI: fields[8] as bool,
+      isUser: fields[6] as bool,
+      type: fields[7] as MessageType,
+      channelId: fields[8] as String?,
       metadata: (fields[9] as Map?)?.cast<String, dynamic>(),
+      isEdited: fields[10] as bool,
+      editedAt: fields[11] as DateTime?,
+      reactions: (fields[12] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ChatMessage obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.userId)
+      ..write(obj.content)
       ..writeByte(2)
-      ..write(obj.userName)
+      ..write(obj.senderId)
       ..writeByte(3)
-      ..write(obj.userAvatar)
+      ..write(obj.senderName)
       ..writeByte(4)
-      ..write(obj.message)
+      ..write(obj.senderAvatarUrl)
       ..writeByte(5)
       ..write(obj.timestamp)
       ..writeByte(6)
-      ..write(obj.type)
+      ..write(obj.isUser)
       ..writeByte(7)
-      ..write(obj.channelId)
+      ..write(obj.type)
       ..writeByte(8)
-      ..write(obj.isFromAI)
+      ..write(obj.channelId)
       ..writeByte(9)
-      ..write(obj.metadata);
+      ..write(obj.metadata)
+      ..writeByte(10)
+      ..write(obj.isEdited)
+      ..writeByte(11)
+      ..write(obj.editedAt)
+      ..writeByte(12)
+      ..write(obj.reactions);
   }
 
   @override
@@ -79,11 +88,17 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
       case 1:
         return MessageType.image;
       case 2:
-        return MessageType.system;
+        return MessageType.video;
       case 3:
-        return MessageType.bet;
+        return MessageType.audio;
       case 4:
-        return MessageType.tip;
+        return MessageType.file;
+      case 5:
+        return MessageType.system;
+      case 6:
+        return MessageType.betting;
+      case 7:
+        return MessageType.prediction;
       default:
         return MessageType.text;
     }
@@ -98,14 +113,23 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
       case MessageType.image:
         writer.writeByte(1);
         break;
-      case MessageType.system:
+      case MessageType.video:
         writer.writeByte(2);
         break;
-      case MessageType.bet:
+      case MessageType.audio:
         writer.writeByte(3);
         break;
-      case MessageType.tip:
+      case MessageType.file:
         writer.writeByte(4);
+        break;
+      case MessageType.system:
+        writer.writeByte(5);
+        break;
+      case MessageType.betting:
+        writer.writeByte(6);
+        break;
+      case MessageType.prediction:
+        writer.writeByte(7);
         break;
     }
   }

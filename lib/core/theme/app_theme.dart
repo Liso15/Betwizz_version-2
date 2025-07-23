@@ -9,12 +9,12 @@ class AppTheme {
   static const Color backgroundDark = Color(0xFF121212);
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF1E1E1E);
-  
+
   // Text Colors
   static const Color textPrimary = Color(0xFF212529);
   static const Color textSecondary = Color(0xFF6C757D);
   static const Color textLight = Color(0xFFFFFFFF);
-  
+
   // Status Colors
   static const Color success = Color(0xFF28A745);
   static const Color warning = Color(0xFFFFC107);
@@ -28,7 +28,6 @@ class AppTheme {
       primarySwatch: _createMaterialColor(primaryGreen),
       primaryColor: primaryGreen,
       scaffoldBackgroundColor: backgroundLight,
-      
       colorScheme: const ColorScheme.light(
         primary: primaryGreen,
         secondary: accentGold,
@@ -41,7 +40,6 @@ class AppTheme {
         onBackground: textPrimary,
         onError: textLight,
       ),
-      
       appBarTheme: const AppBarTheme(
         backgroundColor: primaryGreen,
         foregroundColor: textLight,
@@ -53,7 +51,6 @@ class AppTheme {
           color: textLight,
         ),
       ),
-      
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryGreen,
@@ -65,15 +62,13 @@ class AppTheme {
           ),
         ),
       ),
-      
-      cardTheme: CardTheme(
-        color: surfaceLight,
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      
+    cardTheme: const CardThemeData(
+  color: surfaceLight,
+  elevation: 2,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+  ),
+),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceLight,
@@ -90,7 +85,6 @@ class AppTheme {
           borderSide: const BorderSide(color: primaryGreen, width: 2),
         ),
       ),
-      
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: surfaceLight,
         selectedItemColor: primaryGreen,
@@ -98,7 +92,6 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
-      
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontSize: 32,
@@ -171,7 +164,6 @@ class AppTheme {
       primarySwatch: _createMaterialColor(primaryGreen),
       primaryColor: primaryGreen,
       scaffoldBackgroundColor: backgroundDark,
-      
       colorScheme: const ColorScheme.dark(
         primary: primaryGreen,
         secondary: accentGold,
@@ -184,7 +176,6 @@ class AppTheme {
         onBackground: textLight,
         onError: textLight,
       ),
-      
       appBarTheme: const AppBarTheme(
         backgroundColor: surfaceDark,
         foregroundColor: textLight,
@@ -196,7 +187,6 @@ class AppTheme {
           color: textLight,
         ),
       ),
-      
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryGreen,
@@ -208,15 +198,13 @@ class AppTheme {
           ),
         ),
       ),
-      
-      cardTheme: CardTheme(
-        color: surfaceDark,
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      
+      cardTheme: const CardThemeData(
+  color: surfaceDark,
+  elevation: 2,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+  ),
+),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceDark,
@@ -233,7 +221,6 @@ class AppTheme {
           borderSide: const BorderSide(color: primaryGreen, width: 2),
         ),
       ),
-      
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: surfaceDark,
         selectedItemColor: primaryGreen,
@@ -241,7 +228,6 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
-      
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontSize: 32,

@@ -1,5 +1,4 @@
-// MISSING: Critical screens not specified in PRD
-
+import 'package:flutter/widgets.dart';
 class MissingScreens {
   // User Onboarding
   static Widget buildWelcomeScreen() => throw UnimplementedError();

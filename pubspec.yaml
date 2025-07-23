@@ -10,7 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+  flutter_riverpod: ^2.4.9
+  uuid: ^3.0.7
+
+
   # State Management
   provider: ^6.1.1
   

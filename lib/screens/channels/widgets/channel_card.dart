@@ -123,22 +123,7 @@ class ChannelCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (channel.subscriptionTier != SubscriptionTier.free)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFB300),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'R${channel.price.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      // You can add more widgets here if needed
                     ],
                   ),
                 ],
