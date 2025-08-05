@@ -1,28 +1,30 @@
 {
-  "name": "betwizz-flutter-app",
+  "name": "betwizz-web-tools",
   "version": "1.0.0",
-  "description": "Betwizz Flutter Web Application",
-  "main": "index.js",
+  "description": "Build and optimization tools for Betwizz web app",
   "scripts": {
-    "deploy": "flutter clean && flutter pub get && flutter build web --release --web-renderer html && node scripts/optimize-assets.js && node scripts/verify-build.js && node scripts/generate-sitemap.js",
-    "build": "flutter build web --release --web-renderer html",
-    "serve": "flutter run -d web-server --web-port 3000",
-    "analyze": "flutter analyze",
-    "test": "flutter test",
-    "clean": "flutter clean"
-  },
-  "engines": {
-    "node": "18.x"
+    "build": "flutter build web --release --web-renderer canvaskit --dart-define=FLUTTER_WEB_USE_SKIA=true",
+    "build:analyze": "npm run build && node scripts/bundle-analyzer.js",
+    "serve": "cd build/web && python3 -m http.server 8080",
+    "test:build": "bash scripts/test-optimized-build.sh",
+    "optimize": "bash scripts/optimize_for_web.sh",
+    "lighthouse": "lhci autorun",
+    "size-check": "bundlesize",
+    "deploy": "firebase deploy --only hosting"
   },
   "devDependencies": {
-    "sharp": "^0.32.6",
-    "imagemin": "^8.0.1",
-    "imagemin-pngquant": "^9.0.2",
-    "imagemin-mozjpeg": "^10.0.0",
-    "fs-extra": "^11.1.1",
-    "glob": "^10.3.10"
+    "@lhci/cli": "^0.12.0",
+    "bundlesize": "^0.18.1",
+    "gzip-size-cli": "^5.1.0"
   },
-  "keywords": ["flutter", "web", "betting", "sports", "south-africa"],
-  "author": "Betwizz Team",
-  "license": "MIT"
+  "bundlesize": [
+    {
+      "path": "build/web/main.dart.js",
+      "maxSize": "8.5MB",
+      "compression": "gzip"
+    }
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }

@@ -1,0 +1,72 @@
+name: betwizz
+description: "Betwizz - Web-optimized betting platform"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management (consolidated to Provider only)
+  provider: ^6.1.1
+  
+  # Firebase (web-optimized)
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  firebase_analytics: ^10.7.4
+  
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # Networking
+  http: ^1.1.2
+  
+  # Image Handling (web-optimized)
+  cached_network_image: ^3.3.0
+  
+  # UI Components
+  cupertino_icons: ^1.0.6
+  
+  # Code Generation
+  json_annotation: ^4.8.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/fonts/
+  
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+
+# Web-specific configuration
+flutter_web:
+  canvaskit_url: "https://unpkg.com/canvaskit-wasm@0.38.0/bin/"
+  tree_shake_icons: true
+  web_renderer: canvaskit
+
+# Dependency overrides to remove mobile-only packages
+dependency_overrides:
+  # Remove mobile-only packages that might be pulled in as transitive dependencies
+  camera: 
+  video_player:
+  agora_rtc_engine:
+  connectivity_plus:
