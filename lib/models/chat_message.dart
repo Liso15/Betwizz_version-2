@@ -1,46 +1,16 @@
-import 'package:hive/hive.dart';
-
-part 'chat_message.g.dart';
-
-@HiveType(typeId: 1)
-class ChatMessage extends HiveObject {
-  @HiveField(0)
+class ChatMessage {
   final String id;
-
-  @HiveField(1)
   final String content;
-
-  @HiveField(2)
   final String senderId;
-
-  @HiveField(3)
   final String senderName;
-
-  @HiveField(4)
   final String? senderAvatarUrl;
-
-  @HiveField(5)
   final DateTime timestamp;
-
-  @HiveField(6)
   final bool isUser;
-
-  @HiveField(7)
   final MessageType type;
-
-  @HiveField(8)
   final String? channelId;
-
-  @HiveField(9)
   final Map<String, dynamic>? metadata;
-
-  @HiveField(10)
   final bool isEdited;
-
-  @HiveField(11)
   final DateTime? editedAt;
-
-  @HiveField(12)
   final List<String> reactions;
 
   ChatMessage({
@@ -147,22 +117,13 @@ class ChatMessage extends HiveObject {
   int get hashCode => id.hashCode;
 }
 
-@HiveType(typeId: 2)
 enum MessageType {
-  @HiveField(0)
   text,
-  @HiveField(1)
   image,
-  @HiveField(2)
   video,
-  @HiveField(3)
   audio,
-  @HiveField(4)
   file,
-  @HiveField(5)
   system,
-  @HiveField(6)
   betting,
-  @HiveField(7)
   prediction,
 }

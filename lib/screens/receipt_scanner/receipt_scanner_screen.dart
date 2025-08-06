@@ -1,268 +1,119 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/services/receipt_scanner_service.dart';
 import '../../models/bet_receipt.dart';
-import '../../providers/receipt_provider.dart';
+import '../../design_system/app_components.dart';
 
-class ReceiptScannerScreen extends ConsumerStatefulWidget {
-  const ReceiptScannerScreen({super.key});
+class ReceiptScannerScreen extends StatefulWidget {
+  const ReceiptScannerScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ReceiptScannerScreen> createState() => _ReceiptScannerScreenState();
+  _ReceiptScannerScreenState createState() => _ReceiptScannerScreenState();
 }
 
-class _ReceiptScannerScreenState extends ConsumerState<ReceiptScannerScreen> {
-  bool _isScanning = false;
+class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
+  final ReceiptScannerService _scannerService = ReceiptScannerService();
+  late Future<List<BetReceipt>> _receiptsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _receiptsFuture = _scannerService.getReceipts();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final receiptsAsync = ref.watch(receiptsProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Receipt Scanner'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () {
-              // Show receipt history
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
-          // Scanner area
           Expanded(
-            flex: 2,
-            child: Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: _isScanning
-                  ? _buildScanningView()
-                  : _buildScannerPlaceholder(),
+            child: FutureBuilder<List<BetReceipt>>(
+              future: _receiptsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const LoadingIndicator();
+                } else if (snapshot.hasError) {
+                  return ErrorState(
+                    message: 'Error fetching receipts.',
+                    onRetry: () {
+                      setState(() {
+                        _receiptsFuture = _scannerService.getReceipts();
+                      });
+                    },
+                  );
+                } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                  return const EmptyState(message: 'No receipts found.');
+                } else {
+                  final receipts = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: receipts.length,
+                    itemBuilder: (context, index) {
+                      final receipt = receipts[index];
+                      return BetReceiptListItem(receipt: receipt);
+                    },
+                  );
+                }
+              },
             ),
           ),
-          // Recent receipts
-          Expanded(
-            flex: 1,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Recent Scans',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: receiptsAsync.when(
-                      data: (receipts) => _buildReceiptsList(receipts),
-                      loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (error, stack) => Center(
-                        child: Text('Error: $error'),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: PrimaryButton(
+              text: 'Scan Receipt',
+              onPressed: _scanReceipt,
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _startScanning,
-        icon: Icon(_isScanning ? Icons.stop : Icons.camera_alt),
-        label: Text(_isScanning ? 'Stop Scan' : 'Scan Receipt'),
-      ),
-    );
-  }
-
-  Widget _buildScannerPlaceholder() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.receipt_long, size: 64, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
-            'Tap to scan your betting receipt',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Supports Betway, Hollywood Bets, and more',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildScanningView() {
-    return Stack(
-      children: [
-        // Camera preview placeholder
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.black87,
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.camera, size: 48, color: Colors.white),
-                SizedBox(height: 16),
-                Text(
-                  'Camera Preview',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                Text(
-                  'Firebase ML Kit OCR integration',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ),
-        // Scanning overlay
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.green, width: 3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        // Processing indicator
-        const Positioned(
-          bottom: 16,
-          left: 16,
-          right: 16,
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  CircularProgressIndicator(strokeWidth: 2),
-                  SizedBox(width: 12),
-                  Text('Processing receipt...'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+  void _scanReceipt() async {
+    final newReceipt = await _scannerService.scanReceipt();
+    setState(() {
+      _receiptsFuture.then((receipts) => receipts.add(newReceipt));
+    });
   }
+}
 
-  Widget _buildReceiptsList(List<BetReceipt> receipts) {
-    if (receipts.isEmpty) {
-      return const Center(
-        child: Text(
-          'No receipts scanned yet',
-          style: TextStyle(color: Colors.grey),
-        ),
-      );
-    }
+class BetReceiptListItem extends StatelessWidget {
+  const BetReceiptListItem({
+    Key? key,
+    required this.receipt,
+  }) : super(key: key);
 
-    return ListView.builder(
-      itemCount: receipts.length,
-      itemBuilder: (context, index) {
-        final receipt = receipts[index];
-        return Card(
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: receipt.isWin ? Colors.green : Colors.red,
-              child: Icon(
-                receipt.isWin ? Icons.check : Icons.close,
-                color: Colors.white,
-              ),
+  final BetReceipt receipt;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              receipt.bookmaker,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            title: Text(receipt.bookmaker),
-            subtitle: Text(
-              'R${receipt.stakeAmount.toStringAsFixed(2)} • ${receipt.betType}',
+            const SizedBox(height: 8),
+            Text(
+              '${receipt.betType} - R${receipt.stakeAmount.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            trailing: Text(
-              receipt.isWin 
-                  ? '+R${receipt.winAmount?.toStringAsFixed(2) ?? '0.00'}'
-                  : '-R${receipt.stakeAmount.toStringAsFixed(2)}',
+            const SizedBox(height: 8),
+            Text(
+              receipt.isWin ? 'Won' : 'Lost',
               style: TextStyle(
                 color: receipt.isWin ? Colors.green : Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onTap: () => _showReceiptDetails(receipt),
-          ),
-        );
-      },
-    );
-  }
-
-  void _startScanning() {
-    setState(() {
-      _isScanning = !_isScanning;
-    });
-
-    if (_isScanning) {
-      // Simulate scanning process
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted && _isScanning) {
-          setState(() {
-            _isScanning = false;
-          });
-          _showScanResult();
-        }
-      });
-    }
-  }
-
-  void _showScanResult() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Scan Complete'),
-        content: const Text('Receipt processed successfully!\n\nBetway slip detected:\nR50.00 stake on Manchester United vs Arsenal'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showReceiptDetails(BetReceipt receipt) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('${receipt.bookmaker} Receipt'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Bet Type: ${receipt.betType}'),
-            Text('Stake: R${receipt.stakeAmount.toStringAsFixed(2)}'),
-            Text('Odds: ${receipt.odds}'),
-            if (receipt.isWin && receipt.winAmount != null)
-              Text('Win Amount: R${receipt.winAmount!.toStringAsFixed(2)}'),
-            Text('Date: ${receipt.dateTime.toString().split(' ')[0]}'),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }

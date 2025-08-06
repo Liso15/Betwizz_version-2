@@ -1,52 +1,18 @@
-import 'package:hive/hive.dart';
-
-part 'channel.g.dart';
-
-@HiveType(typeId: 0)
-class Channel extends HiveObject {
-  @HiveField(0)
+class Channel {
   final String id;
-
-  @HiveField(1)
   final String name;
-
-  @HiveField(2)
   final String description;
-
-  @HiveField(3)
   final String thumbnailUrl;
-
-  @HiveField(4)
   final String streamUrl;
-
-  @HiveField(5)
   final bool isLive;
-
-  @HiveField(6)
   final int viewerCount;
-
-  @HiveField(7)
   final String category;
-
-  @HiveField(8)
   final String creatorId;
-
-  @HiveField(9)
   final String creatorName;
-
-  @HiveField(10)
   final DateTime createdAt;
-
-  @HiveField(11)
   final DateTime? lastActiveAt;
-
-  @HiveField(12)
   final List<String> tags;
-
-  @HiveField(13)
   final bool isPremium;
-
-  @HiveField(14)
   final double? subscriptionPrice;
 
   Channel({

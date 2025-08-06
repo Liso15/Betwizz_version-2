@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "335564263032",
+    "project_id": "betwizz",
+    "storage_bucket": "betwizz.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335564263032:android:e5efb766c715eec30be78d",
+        "android_client_info": {
+          "package_name": "com.betwizz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-mmwDmhaRYY3V6OTf-LwsUCmrOqoprtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

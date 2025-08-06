@@ -1,49 +1,17 @@
-import 'package:hive/hive.dart';
-
-part 'bet_receipt.g.dart';
-
-@HiveType(typeId: 3)
-class BetReceipt extends HiveObject {
-  @HiveField(0)
+class BetReceipt {
   final String id;
-
-  @HiveField(1)
   final String bookmaker;
-
-  @HiveField(2)
   final String betType;
-
-  @HiveField(3)
   final double stakeAmount;
-
-  @HiveField(4)
   final double odds;
-
-  @HiveField(5)
   final double? winAmount;
-
-  @HiveField(6)
   final bool isWin;
-
-  @HiveField(7)
   final DateTime dateTime;
-
-  @HiveField(8)
   final String? imageUrl;
-
-  @HiveField(9)
   final String? description;
-
-  @HiveField(10)
   final List<BetSelection> selections;
-
-  @HiveField(11)
   final ReceiptStatus status;
-
-  @HiveField(12)
   final String? referenceNumber;
-
-  @HiveField(13)
   final Map<String, dynamic>? metadata;
 
   BetReceipt({
@@ -161,24 +129,12 @@ class BetReceipt extends HiveObject {
   int get hashCode => id.hashCode;
 }
 
-@HiveType(typeId: 4)
-class BetSelection extends HiveObject {
-  @HiveField(0)
+class BetSelection {
   final String id;
-
-  @HiveField(1)
   final String event;
-
-  @HiveField(2)
   final String selection;
-
-  @HiveField(3)
   final double odds;
-
-  @HiveField(4)
   final String? result;
-
-  @HiveField(5)
   final bool? isWin;
 
   BetSelection({
@@ -218,16 +174,10 @@ class BetSelection extends HiveObject {
   }
 }
 
-@HiveType(typeId: 5)
 enum ReceiptStatus {
-  @HiveField(0)
   pending,
-  @HiveField(1)
   verified,
-  @HiveField(2)
   settled,
-  @HiveField(3)
   cancelled,
-  @HiveField(4)
   error,
 }
