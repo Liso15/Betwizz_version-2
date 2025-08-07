@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import '../../core/services/auth_service.dart';
 import '../../design_system/app_components.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authService = Provider.of<AuthService>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Register'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -42,24 +42,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 32),
             PrimaryButton(
-              text: 'Login',
+              text: 'Register',
               onPressed: () async {
-                await authService.signInWithEmailAndPassword(
+                await authService.registerWithEmailAndPassword(
                   _emailController.text,
                   _passwordController.text,
                 );
               },
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const RegistrationScreen(),
-                  ),
-                );
-              },
-              child: const Text('Don\'t have an account? Register'),
             ),
           ],
         ),

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
+import '../../core/services/auth_service.dart';
 import '../../core/constants/app_constants.dart';
 
-class ProfileScreen extends ConsumerWidget {
-  const ProfileScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final user = authService.currentUser;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -35,9 +38,9 @@ class ProfileScreen extends ConsumerWidget {
                       child: Icon(Icons.person, size: 40, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'John Doe',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      user?.email ?? 'Anonymous',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const Text(
                       'Premium Member',
@@ -55,6 +58,15 @@ class ProfileScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+            ),
+            const SizedBox(height: 20),
+
+            // Sign Out Button
+            ElevatedButton(
+              onPressed: () async {
+                await authService.signOut();
+              },
+              child: const Text('Sign Out'),
             ),
             const SizedBox(height: 20),
             
