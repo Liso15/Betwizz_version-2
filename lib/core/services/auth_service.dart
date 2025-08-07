@@ -10,7 +10,8 @@ class AuthService {
         password: password,
       );
       return userCredential.user;
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
+      // TODO: Handle exceptions
       print(e);
       return null;
     }
@@ -23,7 +24,8 @@ class AuthService {
         password: password,
       );
       return userCredential.user;
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
+      // TODO: Handle exceptions
       print(e);
       return null;
     }
@@ -32,4 +34,6 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 }

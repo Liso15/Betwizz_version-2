@@ -4,7 +4,9 @@ import '../../models/chat_message.dart';
 import '../../design_system/app_components.dart';
 
 class AiChatScreen extends StatefulWidget {
-  const AiChatScreen({Key? key}) : super(key: key);
+  const AiChatScreen({Key? key, required this.channelId}) : super(key: key);
+
+  final String channelId;
 
   @override
   _AiChatScreenState createState() => _AiChatScreenState();
@@ -12,14 +14,7 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final AiChatService _chatService = AiChatService();
-  late Future<List<ChatMessage>> _messagesFuture;
   final TextEditingController _textController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _messagesFuture = _chatService.getChatMessages();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +25,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder<List<ChatMessage>>(
-              future: _messagesFuture,
+            child: StreamBuilder<List<ChatMessage>>(
+              stream: _chatService.getChatMessages(widget.channelId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const LoadingIndicator();
@@ -39,9 +34,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   return ErrorState(
                     message: 'Error fetching messages.',
                     onRetry: () {
-                      setState(() {
-                        _messagesFuture = _chatService.getChatMessages();
-                      });
+                      setState(() {});
                     },
                   );
                 } else if (snapshot.hasData && snapshot.data!.isEmpty) {
@@ -49,6 +42,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 } else {
                   final messages = snapshot.data!;
                   return ListView.builder(
+                    reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
@@ -68,16 +62,21 @@ class _AiChatScreenState extends State<AiChatScreen> {
     );
   }
 
-  void _sendMessage() async {
-    final message = _textController.text.trim();
-    if (message.isEmpty) return;
+  void _sendMessage() {
+    final messageContent = _textController.text.trim();
+    if (messageContent.isEmpty) return;
 
+    final message = ChatMessage(
+      id: '', // Firestore will generate this
+      content: messageContent,
+      senderId: 'user1', // TODO: Get current user ID
+      senderName: 'John Doe', // TODO: Get current user name
+      timestamp: DateTime.now(),
+      isUser: true,
+    );
+
+    _chatService.sendMessage(widget.channelId, message);
     _textController.clear();
-
-    final newMessage = await _chatService.sendMessage(message);
-    setState(() {
-      _messagesFuture.then((messages) => messages.add(newMessage));
-    });
   }
 }
 

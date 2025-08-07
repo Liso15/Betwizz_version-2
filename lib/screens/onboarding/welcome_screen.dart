@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../design_system/app_components.dart';
+import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -24,7 +25,11 @@ class WelcomeScreen extends StatelessWidget {
             PrimaryButton(
               text: 'Get Started',
               onPressed: () {
-                // TODO: Navigate to the next screen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
               },
             ),
           ],

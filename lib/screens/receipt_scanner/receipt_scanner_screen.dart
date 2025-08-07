@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/services/receipt_scanner_service.dart';
 import '../../models/bet_receipt.dart';
 import '../../design_system/app_components.dart';
 
 class ReceiptScannerScreen extends StatefulWidget {
-  const ReceiptScannerScreen({Key? key}) : super(key: key);
+  const ReceiptScannerScreen({Key? key, required this.userId}) : super(key: key);
+
+  final String userId;
 
   @override
   _ReceiptScannerScreenState createState() => _ReceiptScannerScreenState();
@@ -12,13 +16,7 @@ class ReceiptScannerScreen extends StatefulWidget {
 
 class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
   final ReceiptScannerService _scannerService = ReceiptScannerService();
-  late Future<List<BetReceipt>> _receiptsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _receiptsFuture = _scannerService.getReceipts();
-  }
+  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +27,8 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder<List<BetReceipt>>(
-              future: _receiptsFuture,
+            child: StreamBuilder<List<BetReceipt>>(
+              stream: _scannerService.getReceipts(widget.userId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const LoadingIndicator();
@@ -38,9 +36,7 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
                   return ErrorState(
                     message: 'Error fetching receipts.',
                     onRetry: () {
-                      setState(() {
-                        _receiptsFuture = _scannerService.getReceipts();
-                      });
+                      setState(() {});
                     },
                   );
                 } else if (snapshot.hasData && snapshot.data!.isEmpty) {
@@ -71,10 +67,29 @@ class _ReceiptScannerScreenState extends State<ReceiptScannerScreen> {
   }
 
   void _scanReceipt() async {
-    final newReceipt = await _scannerService.scanReceipt();
-    setState(() {
-      _receiptsFuture.then((receipts) => receipts.add(newReceipt));
-    });
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+
+    final newReceipt = BetReceipt(
+      id: '', // Firestore will generate this
+      bookmaker: 'New Bet',
+      betType: 'Single',
+      stakeAmount: 20.0,
+      odds: 3.0,
+      isWin: false,
+      dateTime: DateTime.now(),
+      selections: [
+        BetSelection(
+          id: '1',
+          event: 'New Event',
+          selection: 'New Selection',
+          odds: 3.0,
+          isWin: false,
+        ),
+      ],
+    );
+
+    await _scannerService.saveReceipt(widget.userId, newReceipt, File(image.path));
   }
 }
 
@@ -95,6 +110,9 @@ class BetReceiptListItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (receipt.imageUrl != null)
+              Image.network(receipt.imageUrl!),
+            const SizedBox(height: 8),
             Text(
               receipt.bookmaker,
               style: Theme.of(context).textTheme.titleLarge,

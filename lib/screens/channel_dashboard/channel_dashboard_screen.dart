@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/services/channel_service.dart';
 import '../../models/channel.dart';
 import '../../design_system/app_components.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class ChannelDashboardScreen extends StatefulWidget {
   const ChannelDashboardScreen({Key? key}) : super(key: key);
@@ -13,13 +12,6 @@ class ChannelDashboardScreen extends StatefulWidget {
 
 class _ChannelDashboardScreenState extends State<ChannelDashboardScreen> {
   final ChannelService _channelService = ChannelService();
-  late Future<List<Channel>> _channelsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _channelsFuture = _channelService.getChannels();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +19,8 @@ class _ChannelDashboardScreenState extends State<ChannelDashboardScreen> {
       appBar: AppBar(
         title: const Text('Channels'),
       ),
-      body: FutureBuilder<List<Channel>>(
-        future: _channelsFuture,
+      body: StreamBuilder<List<Channel>>(
+        stream: _channelService.getChannels(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingIndicator();
@@ -36,9 +28,7 @@ class _ChannelDashboardScreenState extends State<ChannelDashboardScreen> {
             return ErrorState(
               message: 'Error fetching channels.',
               onRetry: () {
-                setState(() {
-                  _channelsFuture = _channelService.getChannels();
-                });
+                setState(() {});
               },
             );
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
@@ -59,8 +49,6 @@ class _ChannelDashboardScreenState extends State<ChannelDashboardScreen> {
   }
 }
 
-import 'package:cached_network_image/cached_network_image.dart';
-
 class ChannelListItem extends StatelessWidget {
   const ChannelListItem({
     Key? key,
@@ -78,12 +66,6 @@ class ChannelListItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CachedNetworkImage(
-              imageUrl: channel.thumbnailUrl,
-              placeholder: (context, url) => const LoadingIndicator(),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
-            ),
-            const SizedBox(height: 8),
             Text(
               channel.name,
               style: Theme.of(context).textTheme.titleLarge,

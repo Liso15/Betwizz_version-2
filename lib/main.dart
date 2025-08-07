@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'screens/onboarding/welcome_screen.dart';
+import 'package:provider/provider.dart';
+import 'core/services/auth_service.dart';
+import 'screens/auth_wrapper.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
@@ -14,11 +16,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Betwizz',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      home: const WelcomeScreen(),
+    return Provider<AuthService>(
+      create: (_) => AuthService(),
+      child: MaterialApp(
+        title: 'Betwizz',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        home: const AuthWrapper(),
+      ),
     );
   }
 }

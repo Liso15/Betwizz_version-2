@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/channel.dart';
-import '../mock/mock_data.dart';
 
 class ChannelService {
-  Future<List<Channel>> getChannels() async {
-    // TODO: Replace with Firestore implementation
-    await Future.delayed(const Duration(seconds: 1));
-    return MockData.channels;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Stream<List<Channel>> getChannels() {
+    return _firestore.collection('channels').snapshots().map((snapshot) =>
+        snapshot.docs.map((doc) => Channel.fromJson(doc.data())).toList());
   }
 }
