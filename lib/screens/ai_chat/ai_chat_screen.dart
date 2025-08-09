@@ -23,7 +23,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final messagesAsync = ref.watch(chatMessagesProvider);
+  final messagesAsync = ref.watch(chatMessagesProvider);
+  debugPrint('AiChatScreen: messagesAsync state = ' + messagesAsync.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -90,22 +91,28 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
           // Chat messages
           Expanded(
             child: messagesAsync.when(
-              data: (messages) => _buildMessagesList(messages),
+              data: (messages) {
+                debugPrint('AiChatScreen: loaded messages count = ' + messages.length.toString());
+                return _buildMessagesList(messages);
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error, size: 48, color: Colors.red),
-                    const SizedBox(height: 16),
-                    Text('Error: $error'),
-                    ElevatedButton(
-                      onPressed: () => ref.invalidate(chatMessagesProvider),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
+              error: (error, stack) {
+                debugPrint('AiChatScreen: error loading messages: $error');
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, size: 48, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text('Error: $error'),
+                      ElevatedButton(
+                        onPressed: () => ref.invalidate(chatMessagesProvider),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
           // Message input

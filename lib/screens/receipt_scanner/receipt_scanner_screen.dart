@@ -15,7 +15,8 @@ class _ReceiptScannerScreenState extends ConsumerState<ReceiptScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final receiptsAsync = ref.watch(receiptsProvider);
+  final receiptsAsync = ref.watch(receiptsProvider);
+  debugPrint('ReceiptScannerScreen: receiptsAsync state = ' + receiptsAsync.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -66,9 +67,12 @@ class _ReceiptScannerScreenState extends ConsumerState<ReceiptScannerScreen> {
                     child: receiptsAsync.when(
                       data: (receipts) => _buildReceiptsList(receipts),
                       loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (error, stack) => Center(
-                        child: Text('Error: $error'),
-                      ),
+                      error: (error, stack) {
+                        debugPrint('ReceiptScannerScreen: error loading receipts: $error');
+                        return Center(
+                          child: Text('Error: $error'),
+                        );
+                      },
                     ),
                   ),
                 ],

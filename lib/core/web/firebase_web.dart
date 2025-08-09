@@ -94,12 +94,15 @@ class FirebaseWeb {
       // Set analytics collection enabled
       await _analytics!.setAnalyticsCollectionEnabled(true);
       
-      // Set default parameters
-      await _analytics!.setDefaultParameters({
-        'platform': 'web',
-        'app_version': '1.0.0',
-        'environment': kDebugMode ? 'development' : 'production',
-      });
+      // Log startup event with environment parameters
+      await _analytics!.logEvent(
+        name: 'startup',
+        parameters: {
+          'platform': 'web',
+          'app_version': '1.0.0',
+          'environment': kDebugMode ? 'development' : 'production',
+        },
+      );
       
       if (kDebugMode) {
         print('$_tag: Analytics configured');

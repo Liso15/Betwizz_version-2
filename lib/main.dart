@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screens/splash_screen.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: BetwizzApp()));
+}
+
+class BetwizzApp extends StatelessWidget {
+  const BetwizzApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Betwizz',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const SplashScreen(),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {

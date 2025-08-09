@@ -1,38 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'core/web/web_config.dart';
 import 'core/web/firebase_web.dart';
 import 'core/theme/app_theme.dart';
-import 'providers/channel_provider.dart';
-import 'providers/receipt_provider.dart';
-import 'providers/ai_chat_provider.dart';
-import 'screens/main_navigation.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize web-specific configurations
-  await WebConfig.initialize();
-  
-  // Initialize Hive for local storage
-  await Hive.initFlutter();
-  
-  // Initialize Firebase for web
-  if (kIsWeb) {
-    try {
-      await FirebaseWeb.initialize();
-    } catch (e) {
-      if (kDebugMode) {
-        print('Firebase initialization failed: $e');
+  try {
+    debugPrint('App starting...');
+    WidgetsFlutterBinding.ensureInitialized();
+    debugPrint('Flutter binding initialized');
+    
+    // Initialize web-specific configurations
+    debugPrint('Initializing WebConfig...');
+    await WebConfig.initialize();
+    debugPrint('WebConfig initialized');
+    
+    // Initialize Hive for local storage
+    debugPrint('Initializing Hive...');
+    await Hive.initFlutter();
+    debugPrint('Hive initialized');
+    
+    // Initialize Firebase for web
+    if (kIsWeb) {
+      try {
+        debugPrint('Initializing Firebase for web...');
+        await Firebase.initializeApp(options: FirebaseConfig.current);
+        await FirebaseWeb.initialize();
+        debugPrint('Firebase initialized');
+      } catch (e) {
+        debugPrint('Firebase initialization failed: $e');
+        // Continue without Firebase for now
       }
     }
+    
+    debugPrint('Starting app...');
+    runApp(const ProviderScope(child: BetwizzWebApp()));
+  } catch (e, stack) {
+    debugPrint('Error during app initialization: $e');
+    debugPrint('Stack trace: $stack');
+    rethrow;
   }
-  
-  runApp(const BetwizzWebApp());
 }
 
 class BetwizzWebApp extends StatelessWidget {
@@ -40,32 +52,26 @@ class BetwizzWebApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ChannelProvider()),
-        ChangeNotifierProvider(create: (_) => ReceiptProvider()),
-        ChangeNotifierProvider(create: (_) => AiChatProvider()),
-      ],
-      child: MaterialApp(
-        title: WebConfig.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        home: const SplashScreen(),
-        routes: {
-          '/home': (context) => const MainNavigation(),
-          '/channels': (context) => const MainNavigation(initialIndex: 0),
-          '/scanner': (context) => const MainNavigation(initialIndex: 1),
-          '/chat': (context) => const MainNavigation(initialIndex: 2),
-          '/profile': (context) => const MainNavigation(initialIndex: 3),
-        },
+    debugPrint('BetwizzWebApp build called');
+    return MaterialApp(
+      title: WebConfig.appName,
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: const SplashScreen(),
+      builder: (context, child) {
+        ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+          return WebErrorWidget(error: errorDetails.exception.toString());
+        };
+        return child ?? const SizedBox.shrink();
+      },
+    );
         builder: (context, child) {
           // Web-specific error handling
           ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
             return WebErrorWidget(error: errorDetails.exception.toString());
           };
-          
           return child!;
         },
       ),

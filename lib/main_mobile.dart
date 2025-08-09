@@ -108,13 +108,7 @@ Future<void> _initializeHive() async {
   await Hive.openBox<Channel>('channels');
   await Hive.openBox<ChatMessage>('chat_messages');
   await Hive.openBox<BetReceipt>('bet_receipts');
-  
-  await Hive.openBox<BetReceipt>(
-  'bet_receipts',
-   compactionStrategy: (entries, deletedEntries) {
-    return deletedEntries > entries * 0.2;
-  },
-  );
+  // Box already opened above; remove duplicate open to avoid runtime error
 }
 
 class BetwizzMobileApp extends StatefulWidget {

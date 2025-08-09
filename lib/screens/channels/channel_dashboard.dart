@@ -78,9 +78,10 @@ class _ChannelDashboardState extends ConsumerState<ChannelDashboard>
   Widget _buildLiveChannels(AsyncValue<List<Channel>> channelsAsync) {
     return channelsAsync.when(
       data: (channels) {
+        debugPrint('ChannelDashboard: loaded channels count = ' + channels.length.toString());
         final liveChannels = channels.where((c) => c.isLive).toList();
-        
         if (liveChannels.isEmpty) {
+          debugPrint('ChannelDashboard: No live channels');
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -93,7 +94,6 @@ class _ChannelDashboardState extends ConsumerState<ChannelDashboard>
             ),
           );
         }
-
         return RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(channelsProvider);
@@ -115,20 +115,23 @@ class _ChannelDashboardState extends ConsumerState<ChannelDashboard>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text('Error loading channels: $error'),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(channelsProvider),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+      error: (error, stack) {
+        debugPrint('ChannelDashboard: error loading channels: $error');
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading channels: $error'),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(channelsProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

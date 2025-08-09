@@ -1,5 +1,7 @@
-package com.example.betwizz
+package com.betwizz.app
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity()
+
+

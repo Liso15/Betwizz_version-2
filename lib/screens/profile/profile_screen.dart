@@ -7,7 +7,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+  debugPrint('ProfileScreen build called');
+  return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [

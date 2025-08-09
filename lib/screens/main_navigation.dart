@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'channels/channel_dashboard.dart';
 import 'ai_chat/ai_chat_screen.dart';
@@ -7,15 +7,16 @@ import 'receipt_scanner/receipt_scanner_screen.dart';
 import 'profile/profile_screen.dart';
 import '../providers/channel_provider.dart';
 
-class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+class MainNavigation extends ConsumerStatefulWidget {
+  final int initialIndex;
+  const MainNavigation({super.key, this.initialIndex = 0});
 
   @override
-  State<MainNavigation> createState() => _MainNavigationState();
+  ConsumerState<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
+class _MainNavigationState extends ConsumerState<MainNavigation> {
+  late int _currentIndex;
   late PageController _pageController;
 
   final List<Widget> _screens = [
@@ -51,12 +52,12 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
     
     // Initialize providers
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChannelProvider>().loadChannels();
-    });
+  // Riverpod automatically initializes providers. If you need to trigger a refresh:
+  // context.read(channelsProvider.notifier).refreshChannels();
   }
 
   @override
@@ -78,6 +79,9 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('MainNavigation build called');
+    // Example: watch channelsProvider (not used directly here, but for demonstration)
+    final channelsAsync = ref.watch(channelsProvider);
     return Scaffold(
       body: PageView(
         controller: _pageController,

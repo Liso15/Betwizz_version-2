@@ -36,6 +36,9 @@
 
   <!-- Theme -->
   <meta name="theme-color" content="#1976D2">
+  
+  <!-- Flutter Web -->
+  <meta name="flutter-renderer" content="html">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -163,45 +166,19 @@
 <body>
   <!-- Loading Screen -->
   <div class="loading-container" id="loading">
-    <div class="loading-logo">BW</div>
-    <div class="loading-text">Betwizz</div>
-    <div class="loading-subtitle">Smart Betting Assistant</div>
+    <div class="loading-text">Loading...</div>
     <div class="loading-spinner"></div>
-    <div class="loading-progress">
-      <div class="loading-progress-bar"></div>
-    </div>
   </div>
 
-  <!-- Flutter App Container -->
-  <div id="flutter-container"></div>
-
   <script>
-    // Performance monitoring
-    const loadStartTime = performance.now();
-    
-    // Hide loading screen when Flutter is ready
-    window.addEventListener('flutter-first-frame', function() {
-      const loadTime = performance.now() - loadStartTime;
-      console.log(`Flutter first frame: ${loadTime.toFixed(2)}ms`);
-      
-      document.body.classList.add('flutter-ready');
-      
+    window.addEventListener('load', function() {
       setTimeout(() => {
         const loadingElement = document.getElementById('loading');
         if (loadingElement) {
           loadingElement.remove();
         }
-      }, 500);
+      }, 10000);
     });
-    
-    // Fallback: Hide loading screen after 10 seconds
-    setTimeout(() => {
-      const loadingElement = document.getElementById('loading');
-      if (loadingElement) {
-        console.warn('Loading screen timeout - removing after 10s');
-        loadingElement.remove();
-      }
-    }, 10000);
     
     // Service Worker registration - using Flutter's built-in service worker
     // The service worker is now handled automatically by Flutter
@@ -213,8 +190,7 @@
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.load({
-        renderer: "canvaskit",
-        canvasKitBaseUrl: "https://unpkg.com/canvaskit-wasm@0.38.0/bin/",
+        renderer: "html",
       });
     });
   </script>

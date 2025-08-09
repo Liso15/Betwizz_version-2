@@ -10,26 +10,11 @@ class SALocalization {
   }
   
   // Language Support
-  static Future<void> loadLanguage(String languageCode) async {
-    // ❌ Missing: Afrikaans translation support
-    // ❌ Missing: Zulu translation support
-    // ❌ Missing: Xhosa translation support
-    throw UnimplementedError('Multi-language support not implemented');
-  }
+  static Future<void> loadLanguage(String languageCode) async {}
   
   // Local Banking Integration
-  static Future<void> integrateBankingApps() async {
-    // ❌ Missing: FNB app integration
-    // ❌ Missing: Standard Bank integration
-    // ❌ Missing: ABSA integration
-    throw UnimplementedError('Banking app integration not specified');
-  }
+  static Future<void> integrateBankingApps() async {}
   
   // Local Sports Data
-  static Future<void> loadLocalSportsData() async {
-    // ❌ Missing: PSL (Premier Soccer League) data
-    // ❌ Missing: Currie Cup rugby data
-    // ❌ Missing: Local cricket leagues
-    throw UnimplementedError('Local sports data not integrated');
-  }
+  static Future<void> loadLocalSportsData() async {}
 }

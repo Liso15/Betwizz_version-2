@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.betwizz"
+    namespace = "com.betwizz"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,8 +20,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.betwizz"
+        // Application ID must match the app package name declared in the manifest
+        applicationId = "com.betwizz.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
